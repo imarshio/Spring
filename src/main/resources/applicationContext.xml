@@ -1,8 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd">
 
+    <!--  默认使用无参构造 * 常用  -->
+    <!--    <bean id="userDao" class="com.marshio.dao.impl.UserDaoImpl"/>-->
 
-    <bean id="userDao" class="com.marshio.dao.impl.UserDaoImpl"/>
+    <!--  使用静态工厂方法  -->
+    <!--    <bean id="userDao" class="com.marshio.factory.StaticFactory" factory-method="getUserDao" />-->
+
+    <!--  使用工厂方法  -->
+    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>
+    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>
 </beans>

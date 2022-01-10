@@ -4,9 +4,16 @@
 
 ## Spring 开发步骤
 
-- 导入依赖
+- 导入Spring依赖
 
-```bash
+```xml
+<dependencies>
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-context</artifactId>
+        <version>5.0.5.RELEASE</version>
+    </dependency>
+</dependencies>
 ```
 
 
@@ -16,3 +23,24 @@
 - 在配置文件中进行配置
 - 创建ApplicationContext对象并获取bean对象
 
+
+
+### Spring配置文件
+
+> 在Spring中常用applicationContext.xml 来表示Spring的配置文件
+
+
+
+#### Bean
+
+##### Bean实例化的三种方式
+
+- 无参构造方法
+- 工厂静态方法
+- 工厂实例方法
+
+
+
+
+
+> 
