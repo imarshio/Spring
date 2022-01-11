@@ -13,7 +13,9 @@ public class User {
     private String uNum;
     private String uName;
     private int uAge;
-    // 出生
+    /**
+     * 出生
+     */
     private Date uDate;
 
     @Override

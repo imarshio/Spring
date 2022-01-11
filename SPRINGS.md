@@ -119,6 +119,62 @@ spring-context 包含spring所需的核心组件，包括core、context、aop、
 
 - 创建ApplicationContext对象并获取bean对象
 
+    - 加载配置文件
+    - 解析配置文件
+
+    ```java
+    //初始化Spring容器，即找到配置文件，并加载配置文件,在这里我们传入了配置文件的路径
+    ApplicationContext app = new ClassPathXmlApplicationContext("applicationContext.xml");
+    ```
+
+    ​	上面代码的实现`ClassPathXmlApplicationContext.class`如下
+
+    ```java
+    public ClassPathXmlApplicationContext(String configLocation) throws BeansException {
+        // configLocation即我们传入的配置文件名称，把配置文件中的内容读取出来，存到一个Java对象中
+        this(new String[]{configLocation}, true, (ApplicationContext)null);
+    }
+    ```
+
+    ​	上面代码调用了`ClassPathXmlApplicationContext.class`的构造方法如下：
+
+    ```java
+    // f
+    public ClassPathXmlApplicationContext(
+        String[] configLocations, boolean refresh, @Nullable ApplicationContext parent)
+        throws BeansException {
+    
+        super(parent);
+        //这里调用了设置配置文件的路径方法
+        setConfigLocations(configLocations);
+        if (refresh) {
+            refresh();
+        }
+    }
+    
+    //设置配置文件
+    public void setConfigLocations(@Nullable String... locations) {
+        if (locations != null) {
+            Assert.noNullElements(locations, "Config locations must not be null");
+            this.configLocations = new String[locations.length];
+            for (int i = 0; i < locations.length; i++) {
+                // 解析配置文件
+                this.configLocations[i] = resolvePath(locations[i]).trim();
+            }
+        }
+        else {
+            this.configLocations = null;
+        }
+    }
+    
+    //解析路径
+    protected String resolvePath(String path) {
+        return getEnvironment().resolveRequiredPlaceholders(path);
+    }
+    ```
+
+    
+
 
 
 ### Spring配置文件

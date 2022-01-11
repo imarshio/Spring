@@ -13,6 +13,9 @@ public class UserDemo {
     public static void main(String[] args) {
 
         //初始化Spring容器，即找到配置文件，并加载配置文件
+        /*
+        * 当Spring容器进行初始化的时候，会加载并解析配置文件
+        * */
         ApplicationContext app = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         //利用Spring容器获取Bean对象的实例
