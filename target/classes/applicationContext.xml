@@ -4,13 +4,21 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd">
 
-    <!--  默认使用无参构造  -->
-    <!--    <bean id="userDao" class="com.marshio.dao.impl.UserDaoImpl"/>-->
+    <!-- 通过bean将实体类配置给spring进行管理 -->
+    <!--  默认使用无参构造 * 常用  id:表示这个类的唯一标识，以后取对象都需要通过id来获取， -->
+    <bean id="user" class="com.marshio.pojo.User">
+        <!-- 给实体创建时赋初始值 -->
+        <property name="uNum" value="1001"/>
+        <property name="uName" value="ms"/>
+        <property name="uAge" value="1"/>
+        <property name="uDate" ref="date"/>
+    </bean>
 
+    <bean id="date" class="java.util.Date"/>
     <!--  使用静态工厂方法  -->
     <!--    <bean id="userDao" class="com.marshio.factory.StaticFactory" factory-method="getUserDao" />-->
 
     <!--  使用工厂方法  -->
-    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>
-    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>
+    <!--    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>-->
+    <!--    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>-->
 </beans>

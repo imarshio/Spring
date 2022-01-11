@@ -1,6 +1,5 @@
 package com.marshio.demo;
 
-import com.marshio.dao.UserDao;
 import com.marshio.pojo.User;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
@@ -10,7 +9,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
  * @date 2022/01/09/ 下午8:17
  * @description
  */
-public class UserDaoDemo {
+public class UserDemo {
     public static void main(String[] args) {
 
         //初始化Spring容器，即找到配置文件，并加载配置文件
