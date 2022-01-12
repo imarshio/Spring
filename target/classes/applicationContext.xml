@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+    <!--  加入context配置规范  -->
 
-    <!-- 通过bean将实体类配置给spring进行管理 -->
+
+    <!-- 声明使用注解配置对象实体类  -->
+    <context:annotation-config/>
+    <!-- 声明注解扫描范围 -->
+    <context:component-scan base-package="com.marshio.beans"/>
+
+
+    <!-- 通过bean标签将实体类配置给spring进行管理 -->
     <!--  默认使用无参构造 * 常用  id:表示这个类的唯一标识，以后取对象都需要通过id来获取， -->
     <bean id="user" class="com.marshio.pojo.User">
         <!-- 给实体创建时赋初始值 -->
@@ -21,4 +32,7 @@
     <!--  使用工厂方法  -->
     <!--    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>-->
     <!--    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>-->
+
+
+
 </beans>
