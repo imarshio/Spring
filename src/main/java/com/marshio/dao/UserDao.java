@@ -7,5 +7,8 @@ package com.marshio.dao;
  */
 public interface UserDao {
 
-    public void save();
+    /**
+     * 保存用户
+     */
+    void save();
 }

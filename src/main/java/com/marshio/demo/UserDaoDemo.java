@@ -17,9 +17,11 @@ public class UserDaoDemo {
         ApplicationContext app = new ClassPathXmlApplicationContext("applicationContext.xml");
 
         //利用Spring容器获取Bean对象的实例
-        User user = (User) app.getBean("user");
+        UserDao userDao = (UserDao) app.getBean("userDao");
 
+        // Spring AOP 的动态代理使用的是生成代理对象的子类
+        userDao.save();
         //调用对象的方法
-        System.out.println(user.toString());
+        //System.out.println(user.toString());
     }
 }

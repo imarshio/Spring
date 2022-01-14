@@ -1,8 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd">
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd">
 
     <!-- 通过bean将实体类配置给spring进行管理 -->
     <!--  默认使用无参构造 * 常用  id:表示这个类的唯一标识，以后取对象都需要通过id来获取， -->
@@ -14,6 +17,7 @@
         <property name="uDate" ref="date"/>
     </bean>
 
+    <bean id="userDao" class="com.marshio.dao.impl.UserDaoImpl"/>
     <bean id="date" class="java.util.Date"/>
     <!--  使用静态工厂方法  -->
     <!--    <bean id="userDao" class="com.marshio.factory.StaticFactory" factory-method="getUserDao" />-->
@@ -21,4 +25,17 @@
     <!--  使用工厂方法  -->
     <!--    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>-->
     <!--    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>-->
+
+    <!--  AOP  -->
+
+    <bean id="txManager" class="com.marshio.utils.TxManager"/>
+    <aop:config>
+        <!--声明切入点 被代理对象之前的执行方法 * 代表获取所有方法-->
+        <aop:pointcut id="userAll" expression="execution(* com.marshio.dao.impl.UserDaoImpl.*())"/>
+        <!-- 声明切面类 -->
+        <aop:aspect ref="txManager">
+            <aop:before method="begin" pointcut-ref="userAll"/>
+            <aop:after method="commit" pointcut-ref="userAll"/>
+        </aop:aspect>
+    </aop:config>
 </beans>

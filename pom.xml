@@ -10,11 +10,18 @@
     <version>1.0-SNAPSHOT</version>
 
     <dependencies>
-        <!-- 注入spring依赖 spring-context 包含spring所需的核心组件，包括core、context、aop,还有一个expression组件-->
+        <!-- 注入context依赖 完成了IoC的功能 context包含spring所需的核心组件，包括core、context、aop,还有一个expression组件-->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-context</artifactId>
             <version>5.0.5.RELEASE</version>
+        </dependency>
+
+        <!-- 注入aspects依赖，这个完成了Spring的AOP功能 -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aspects</artifactId>
+            <version>5.2.13.RELEASE</version>
         </dependency>
 
         <!-- 注入junit依赖 -->
