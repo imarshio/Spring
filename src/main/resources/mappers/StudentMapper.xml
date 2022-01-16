@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!--mapper 即数据接口实现类-->
+
+
+<!--mapper相当于Dao层接口类的实现类,namespace 放的是实现的接口的路径-->
+<mapper namespace="com.marshio.dao.StudentDao">
+
+    <!--parameterType="com.marshio.pojo.Student" 可以省略-->
+    <insert id="insertStudent" >
+        insert into db_student(stu_num,stu_name,stu_sex,stu_age)
+        values(#{stuNum},#{stuName},#{stuSex},#{stuAge})
+    </insert>
+
+
+    <delete id="deleteStudent">
+        delete from db_student where stu_num = #{stuNum}
+    </delete>
+</mapper>

@@ -9,15 +9,10 @@
        http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd">
+
     <!--  加入context、aop配置规范  -->
 
-
-
-    <!-- 声明需要使用注解配置的对象实体类  -->
-    <context:annotation-config/>
-    <!-- 声明注解扫描范围，被扫描到的类将查看是否有注解，有注解就放入Spring容器 -->
-    <context:component-scan base-package="com.marshio.beans"/>
-
+    <!-- ** context IoC **   -->
 
     <!-- 通过bean标签将实体类配置给spring进行管理 -->
     <!--  默认使用无参构造 * 常用  id:表示这个类的唯一标识，以后取对象都需要通过id来获取， -->
@@ -39,7 +34,15 @@
     <!--    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>-->
 
 
-    <!--  AOP  -->
+    <!-- 声明需要使用注解配置的对象实体类  -->
+    <context:annotation-config/>
+    <!-- 声明注解扫描范围，被扫描到的类将查看是否有注解，有注解就放入Spring容器 -->
+    <context:component-scan base-package="com.marshio.beans"/>
+
+
+
+
+    <!--  ** AOP **  -->
 
     <bean id="txManager" class="com.marshio.utils.TxManager"/>
     <aop:config>
@@ -51,6 +54,9 @@
             <aop:after method="commit" pointcut-ref="userAll"/>
         </aop:aspect>
     </aop:config>
+
+    <!--  ** mybatis **  -->
+
 
     <!-- 配置Druid数据源 -->
     <!-- 加载属性文件 -->
@@ -68,6 +74,8 @@
         <property name="maxActive" value="${druid.pool.maxActive}"/>
         <property name="maxWait" value="${druid.pool.timeout}"/>
     </bean>
+
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"/>
 
 
 

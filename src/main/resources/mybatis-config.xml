@@ -1,8 +1,29 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
 
-    <!-- mybatis配置文件无序更改 -->
+<!-- mybatis-config的模板-->
+    <!-- 在-environments中配置多个environment标签-->
+    <!-- 每个environment中可以配置一个数据库连接信息,default指定默认连接的数据库-->
 
-</beans>
+    <environments default="mysql">
+
+        <environment id="mysql">
+            <!--配置数据库管理方式-->
+            <transactionManager type="JDBC"/>
+            <!--配置数据库连接信息-->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="url" value="jdbc:mysql://192.168.130.133:3306/mas?useSSL=false"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+
+    </environments>
+
+    <mappers>
+        <mapper resource="mappers/StudentMapper.xml"/>
+    </mappers>
+</configuration>

@@ -1,27 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-<<<<<<< HEAD
        xmlns:aop="http://www.springframework.org/schema/aop"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
-       http://www.springframework.org/schema/aop
-       http://www.springframework.org/schema/aop/spring-aop.xsd">
-=======
        xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
        http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/aop
+       http://www.springframework.org/schema/aop/spring-aop.xsd
        http://www.springframework.org/schema/context
        http://www.springframework.org/schema/context/spring-context.xsd">
-    <!--  加入context配置规范  -->
->>>>>>> 74b3811ae3d4cc5eff6929be5b3c45d377665313
 
+    <!--  加入context、aop配置规范  -->
 
-    <!-- 声明使用注解配置对象实体类  -->
-    <context:annotation-config/>
-    <!-- 声明注解扫描范围 -->
-    <context:component-scan base-package="com.marshio.beans"/>
-
+    <!-- ** context IoC **   -->
 
     <!-- 通过bean标签将实体类配置给spring进行管理 -->
     <!--  默认使用无参构造 * 常用  id:表示这个类的唯一标识，以后取对象都需要通过id来获取， -->
@@ -42,21 +33,50 @@
     <!--    <bean id="factory" class="com.marshio.factory.DynamicFactory"/>-->
     <!--    <bean id="userDao" factory-bean="factory" factory-method="getUserDao"/>-->
 
-<<<<<<< HEAD
-    <!--  AOP  -->
+
+    <!-- 声明需要使用注解配置的对象实体类  -->
+    <context:annotation-config/>
+    <!-- 声明注解扫描范围，被扫描到的类将查看是否有注解，有注解就放入Spring容器 -->
+    <context:component-scan base-package="com.marshio.beans"/>
+
+
+
+
+    <!--  ** AOP **  -->
 
     <bean id="txManager" class="com.marshio.utils.TxManager"/>
     <aop:config>
-        <!--声明切入点 被代理对象之前的执行方法 * 代表获取所有方法-->
-        <aop:pointcut id="userAll" expression="execution(* com.marshio.dao.impl.UserDaoImpl.*())"/>
+        <!--声明切入点 被代理对象之前的执行方法 第一个 * 代表返回类型为不限  第二个 * 代表获取impl下的所有类的所有方法-->
+        <aop:pointcut id="userAll" expression="execution(* com.marshio.dao.impl.*.*())"/>
         <!-- 声明切面类 -->
         <aop:aspect ref="txManager">
             <aop:before method="begin" pointcut-ref="userAll"/>
             <aop:after method="commit" pointcut-ref="userAll"/>
         </aop:aspect>
     </aop:config>
-=======
+
+    <!--  ** mybatis **  -->
 
 
->>>>>>> 74b3811ae3d4cc5eff6929be5b3c45d377665313
+    <!-- 配置Druid数据源 -->
+    <!-- 加载属性文件 -->
+    <context:property-placeholder location="classpath:druid.properties"/>
+
+    <!-- 依赖Spring容器完成数据源的创建 -->
+    <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
+        <property name="driver" value="${druid.driver}"/>
+        <property name="url" value="${druid.url}"/>
+        <property name="username" value="${druid.username}"/>
+        <property name="password" value="${druid.password}"/>
+
+        <property name="initialSize" value="${druid.pool.init}"/>
+        <property name="minIdle" value="${druid.pool.minIdle}"/>
+        <property name="maxActive" value="${druid.pool.maxActive}"/>
+        <property name="maxWait" value="${druid.pool.timeout}"/>
+    </bean>
+
+    <bean id="sessionFactory" class="org.mybatis.spring.SqlSessionFactoryBean"/>
+
+
+
 </beans>
