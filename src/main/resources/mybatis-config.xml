@@ -15,10 +15,12 @@
             <!--配置数据库连接信息-->
             <dataSource type="POOLED">
                 <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <!--docker构建镜像出现：IPv4 forwarding is disabled. Networking will not work.
+                    解决：https://zhuanlan.zhihu.com/p/374715083-->
                 <!-- home -->
-<!--                <property name="url" value="jdbc:mysql://192.168.130.133:3306/mas?useSSL=false"/>-->
+                <property name="url" value="jdbc:mysql://192.168.130.134:3306/mas?useSSL=false"/>
                 <!--com-->
-                <property name="url" value="jdbc:mysql://192.168.64.134:3309/mas?useSSL=false"/>
+<!--                <property name="url" value="jdbc:mysql://192.168.64.134:3309/mas?useSSL=false"/>-->
                 <property name="username" value="root"/>
                 <property name="password" value="root"/>
             </dataSource>
