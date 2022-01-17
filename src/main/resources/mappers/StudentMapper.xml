@@ -19,4 +19,13 @@
     <delete id="deleteStudent">
         delete from db_student where stu_num = #{stuNum}
     </delete>
+
+    <update id="updateStudent">
+        update db_student set
+        stu_num = #{stuNum},
+        stu_name = #{stuName},
+        stu_sex = #{stuSex},
+        stu_age = #{stuAge}
+        where id = #{id}
+    </update>
 </mapper>

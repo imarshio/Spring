@@ -5,7 +5,7 @@
       <driver-ref>mysql.8</driver-ref>
       <synchronize>true</synchronize>
       <jdbc-driver>com.mysql.cj.jdbc.Driver</jdbc-driver>
-      <jdbc-url>jdbc:mysql://192.168.130.133:3306/mas</jdbc-url>
+      <jdbc-url>jdbc:mysql://192.168.64.134:3309/mas</jdbc-url>
     </data-source>
   </component>
 </project>

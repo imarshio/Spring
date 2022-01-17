@@ -40,6 +40,14 @@ public class Student {
         this.stuAge = stuAge;
     }
 
+    public Student(int id, String stuNum, String stuName, String stuSex, int stuAge) {
+        this.id = id;
+        this.stuNum = stuNum;
+        this.stuName = stuName;
+        this.stuSex = stuSex;
+        this.stuAge = stuAge;
+    }
+
     public int getId() {
         return id;
     }
