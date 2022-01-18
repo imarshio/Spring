@@ -1,5 +1,8 @@
 package com.marshio.dao;
 
+import com.github.pagehelper.Page;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.marshio.pojo.Student;
 import com.marshio.utils.MybatisUtils;
 import org.apache.ibatis.io.Resources;
@@ -235,6 +238,33 @@ public class StudentDaoTest {
             //查询操作不需要提交事务
             List<Student> students = studentDao.listStudentsByPage(2,5);
             for (Student student : students) {
+                System.out.println(student.toString());
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 分页查询
+     * 参数设置2
+     */
+    @Test
+    public void testListStudentsByPageInterceptor() {
+        try {
+            InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+
+            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
+            SqlSessionFactory factory = builder.build(is);
+            SqlSession sqlSession = factory.openSession();
+
+            StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+            PageHelper.startPage(1, 4);
+            //查询操作不需要提交事务
+            List<Student> students = studentDao.listStudents();
+            PageInfo<Student> studentPageInfo = new PageInfo<Student>(students);
+            List<Student> list = studentPageInfo.getList();
+            for (Student student : list) {
                 System.out.println(student.toString());
             }
         }catch (Exception e){

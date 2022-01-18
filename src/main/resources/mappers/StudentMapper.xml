@@ -43,7 +43,7 @@
         二、设置map映射
         resultMap="studentMap"
         -->
-    <resultMap id="studentMap" type="com.marshio.pojo.Student">
+    <resultMap id="studentMap" type="Student">
         <id column="id" property="id"/>
         <result column="stu_num" property="stuNum"/>
         <result column="stu_name" property="stuName"/>
