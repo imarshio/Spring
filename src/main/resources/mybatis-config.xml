@@ -2,8 +2,11 @@
 <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
+    <!-- mybatis-config的模板-->
 
-<!-- mybatis-config的模板-->
+    <!--  加载数据库（数据源）配置信息  -->
+    <properties resource="datasource/mysql.properties"/>
+
     <!-- 在-environments中配置多个environment标签-->
     <!-- 每个environment中可以配置一个数据库连接信息,default指定默认连接的数据库-->
 
@@ -14,15 +17,15 @@
             <transactionManager type="JDBC"/>
             <!--配置数据库连接信息-->
             <dataSource type="POOLED">
-                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <property name="driver" value="${mysql.driver}"/>
                 <!--docker构建镜像出现：IPv4 forwarding is disabled. Networking will not work.
-                    解决：https://zhuanlan.zhihu.com/p/374715083-->
+                    解决：https://zhuanlan.zhihu.com/p/374715083 -->
                 <!-- home -->
-                <property name="url" value="jdbc:mysql://192.168.130.134:3306/mas?useSSL=false"/>
+                <!--<property name="url" value="jdbc:mysql://192.168.130.134:3306/mas?useSSL=false"/>-->
                 <!--com-->
-<!--                <property name="url" value="jdbc:mysql://192.168.64.134:3309/mas?useSSL=false"/>-->
-                <property name="username" value="root"/>
-                <property name="password" value="root"/>
+                <property name="url" value="${mysql.url}"/>
+                <property name="username" value="${mysql.username}"/>
+                <property name="password" value="${mysql.password}"/>
             </dataSource>
         </environment>
 

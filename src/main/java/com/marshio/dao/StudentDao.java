@@ -12,7 +12,7 @@ import java.util.List;
  */
 public interface StudentDao {
 
-    //数据库操作接口
+    //数据库操作接口，简单的可以通过配置XML文件来代替Impl实现
 
     /**
      * 增
@@ -39,13 +39,13 @@ public interface StudentDao {
     List<Student> listStudents2();
 
     /**
-     * 在mybatis中进行条件查询，
-     * 如果条件查询方法只有一个简单类型或字符串参数，在mapper中可以直接#{除数字外的任意字符串，建议参数名称}获取
-     * 如果操作方法有一个对象类型参数，在mapper中可以通过#{proName}获取对象指定属性值，proName必须是对象属性名称，如Studeng的stuNum
-     * 如果给两个参数，那么就需要通过如下方法
-     *      1.map参数，在mapper中可以直接通过key获取对应的值
-     *      2.可以通过#{arg0}、#{arg1}、#{param0}、#{param1}取值
-     *      或者通过 @param
+     * 在mybatis中进行条件查询，涉及到参数时，需要考虑如下情况
+     * 如果操作方法只有一个简单类型或字符型参数，在mapper中可以直接使用 #{除数字外的任意字符串，建议参数名称} 获取
+     * 如果操作方法有一个对象类型参数，在mapper中可以通过 #{paramName} 获取对象指定属性值，paramName 必须是对象属性名称，如Student的stuNum
+     * 如果给两个以上参数，那么就需要通过如下方法
+     *      1.map参数，在mapper中可以直接通过key获取对应的参数值
+     *      2.通过#{arg0}、#{arg1}...#{argN}或#{param0}、#{param1}...#{paramN} 取值
+     *      3.通过 @Param 注解来指定参数名称，然后通过 #{指定的参数名称} 来获取参数值
      * @param start 分页开始
      * @param pageSize 分页大小
      * @return List<Student>

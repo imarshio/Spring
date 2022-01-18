@@ -9,7 +9,7 @@
 <!--mapper相当于Dao层接口类的实现类,namespace 放的是实现的接口的路径-->
 <mapper namespace="com.marshio.dao.StudentDao">
 
-    <!--parameterType="com.marshio.pojo.Student" 可以省略-->
+    <!--参数类型 parameterType="com.marshio.pojo.Student" 如果在接口方法上明确了参数 此处可以省略-->
     <insert id="insertStudent" >
         insert into db_student(stu_num,stu_name,stu_sex,stu_age)
         values(#{stuNum},#{stuName},#{stuSex},#{stuAge})
@@ -51,27 +51,32 @@
         <result column="stu_age" property="stuAge"/>
     </resultMap>
 
-    <!--resultSets="" 指定当前操作返回的集合类型 -->
+    <!-- 需要使用resultType 来指定返回对象类型 resultSets="" 指定当前操作返回的集合类型 -->
     <select id="listStudents" resultType="com.marshio.pojo.Student" resultSets="java.util.List">
         select id, stu_num stuNum, stu_name stuName, stu_sex stuSex, stu_age stuAge from db_student
     </select>
 
+    <!--  可以使用指定的resultMap 来代替 resultType，这样可以提高代码复用率 -->
     <select id="listStudents2" resultMap="studentMap" resultSets="java.util.List">
         select id, stu_num, stu_name, stu_sex, stu_age from db_student
     </select>
 
+    <!--  去参数值需要注意，如果没有使用param指定参数名称，需要使用指定的参数名称来获取参数值  -->
     <select id="listStudentsByPage" resultMap="studentMap" resultSets="java.util.List">
         select id, stu_num, stu_name, stu_sex, stu_age from db_student limit #{arg0},#{arg1}
     </select>
 
+    <!--  取参数值需要注意，需要使用param来指定参数名称  -->
     <select id="listStudentsByPage2" resultMap="studentMap" resultSets="java.util.List">
         select id, stu_num, stu_name, stu_sex, stu_age from db_student limit #{start},#{pageSize}
     </select>
 
+    <!--  需要指定 resultMap 或 resultType  -->
     <select id="queryStudent" resultMap="studentMap" resultSets="java.util.List">
         select id, stu_num, stu_name, stu_sex, stu_age from db_student where stu_num = #{stuNum}
     </select>
 
+    <!-- 需要指定 resultType  -->
     <select id="getCount" resultType="int">
         select count(*) from db_student
     </select>

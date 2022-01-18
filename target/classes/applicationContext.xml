@@ -60,7 +60,7 @@
 
     <!-- 配置Druid数据源 -->
     <!-- 加载属性文件 -->
-    <context:property-placeholder location="classpath:druid.properties"/>
+    <context:property-placeholder location="classpath:datasource/druid.properties"/>
 
     <!-- 依赖Spring容器完成数据源的创建 -->
     <bean id="druidDataSource" class="com.alibaba.druid.pool.DruidDataSource">
@@ -79,7 +79,7 @@
 
 
     <!--  加载属性文件  -->
-    <context:property-placeholder location="classpath:mybatis.properties"/>
+    <context:property-placeholder location="classpath:datasource/mybatis.properties"/>
 
     <bean id="mybatisDataSource" class="org.apache.ibatis.datasource.pooled.PooledDataSource">
         <property name="driver" value="${mybatis.driver}"/>
