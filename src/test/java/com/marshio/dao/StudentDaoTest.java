@@ -17,10 +17,10 @@ import java.util.List;
  * @date 2022/01/15/ 下午3:58
  * @description 单元测试
  * SqlSession:
- *      1.可以获取Mapper，即Dao层接口实例
- *      2.可以进行事务管理
- *          2.1当我们获取一个session时，就相当于开启一个事务
- *          2.2当我们调用sql失败或出现异常时，可以在catch里进行回滚
+ *      1、可以获取Mapper，即Dao层接口实例
+ *      2、可以进行事务管理
+ *          2.1、当我们获取一个session时，就相当于开启一个事务
+ *          2.2、当我们调用sql失败或出现异常时，可以在catch里进行回滚
  */
 public class StudentDaoTest {
 
@@ -408,9 +408,6 @@ public class StudentDaoTest {
             //插入异常，则进行回滚，多用于多条语句执行时，前面语句成功，后面的语句没有成功
             // 如，事务场景为，插入一条数据，然后修改其中内容，插入成功，但是修改失败，这时就会需要回滚
             sqlSession.rollback();
-        }finally {
-            //最终需要对事务进行提交，关闭事务
-            sqlSession.commit();
         }
     }
 

@@ -58,7 +58,6 @@ public class MybatisUtils {
         return sqlSession;
     }
 
-
     public static <T> T getMapper(Class<T> clazz) {
         // 直接调用该方法，表明不管理事务，即自动提交
         SqlSession sqlSession = getSqlSession(true);
