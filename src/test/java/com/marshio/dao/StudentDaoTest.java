@@ -1,6 +1,5 @@
 package com.marshio.dao;
 
-import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import com.marshio.pojo.Student;
@@ -247,18 +246,13 @@ public class StudentDaoTest {
 
     /**
      * 分页查询
-     * 参数设置2
+     * 分页插件
      */
     @Test
     public void testListStudentsByPageInterceptor() {
         try {
-            InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
-
-            SqlSessionFactoryBuilder builder = new SqlSessionFactoryBuilder();
-            SqlSessionFactory factory = builder.build(is);
-            SqlSession sqlSession = factory.openSession();
-
-            StudentDao studentDao = sqlSession.getMapper(StudentDao.class);
+            
+            StudentDao studentDao = MybatisUtils.getMapper(StudentDao.class);
             PageHelper.startPage(1, 4);
             //查询操作不需要提交事务
             List<Student> students = studentDao.listStudents();

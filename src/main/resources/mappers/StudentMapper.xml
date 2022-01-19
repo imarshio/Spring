@@ -9,6 +9,7 @@
 <!--mapper相当于Dao层接口类的实现类,namespace 放的是实现的接口的路径-->
 <mapper namespace="com.marshio.dao.StudentDao">
 
+
     <!--参数类型 parameterType="com.marshio.pojo.Student" 如果在接口方法上明确了参数 此处可以省略-->
     <insert id="insertStudent" >
         insert into db_student(stu_num,stu_name,stu_sex,stu_age)
@@ -17,7 +18,17 @@
 
     <!-- useGeneratedKeys:设置添加操作是否需要回填生成的主键-->
     <!-- keyProperty:设置回填的主键值赋值到操作对象的哪个属性-->
-    <insert id="insertStudent2" useGeneratedKeys="true" keyProperty="id">
+    <!-- timeout:设置等待时间-->
+    <insert id="insertStudent2" useGeneratedKeys="true" keyProperty="id" timeout="3000">
+        insert into db_student(stu_num,stu_name,stu_sex,stu_age)
+        values(#{stuNum},#{stuName},#{stuSex},#{stuAge})
+    </insert>
+
+    <insert id="insertStudent3" timeout="3000">
+        # 等价于使用 useGeneratedKeys
+        <selectKey keyProperty="id" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
         insert into db_student(stu_num,stu_name,stu_sex,stu_age)
         values(#{stuNum},#{stuName},#{stuSex},#{stuAge})
     </insert>
@@ -79,5 +90,15 @@
     <!-- 需要指定 resultType  -->
     <select id="getCount" resultType="int">
         select count(*) from db_student
+    </select>
+
+    <!--  sql 片段  -->
+    <sql id="pros">
+        id, stu_num, stu_name, stu_sex, stu_age
+    </sql>
+
+    <!--  这样可以使用代码片段代替重复的代码片段  -->
+    <select id="listStudents3" resultMap="studentMap" resultSets="java.util.List">
+        select <include refid="pros"/> from db_student
     </select>
 </mapper>

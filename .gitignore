@@ -20,5 +20,5 @@ bin-release/
 target/
 pom.xml
 src/main/resources/mybatis-config.xml
-.idea
+.idea/
 
