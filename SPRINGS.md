@@ -179,7 +179,65 @@ spring-context 包含spring所需的核心组件，包括core、context、aop、
 
 ### Spring配置文件
 
-> 在Spring中常用applicationContext.xml 来表示Spring的配置文件
+> 在Spring中会用到很多的配置文件,可以参考 https://blog.csdn.net/liulei952413829/article/details/120522864，当然，配置文件是会涉及到版本冲突等问题的，这里还未收录。
+>
+> 如下
+>
+> `applicationContext.xml`
+>
+> ```xml
+> <?xml version="1.0" encoding="UTF-8"?>
+> <beans xmlns="http://www.springframework.org/schema/beans"
+>        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>        xmlns:aop="http://www.springframework.org/schema/aop"
+>        xmlns:context="http://www.springframework.org/schema/context"
+>        xsi:schemaLocation="http://www.springframework.org/schema/beans
+>        http://www.springframework.org/schema/beans/spring-beans.xsd
+>        http://www.springframework.org/schema/aop
+>        http://www.springframework.org/schema/aop/spring-aop.xsd
+>        http://www.springframework.org/schema/context
+>        http://www.springframework.org/schema/context/spring-context.xsd">
+>     <!--  带有context、aop配置规范的xml  -->
+> </beans>
+> ```
+>
+> `web.xml`
+>
+> ```xml
+> <?xml version="1.0" encoding="UTF-8"?>
+> <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+>          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+>          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+>                       http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+>          version="4.0">
+> 
+> </web-app>
+> ```
+>
+> `mybatis-config.xml`
+>
+> ```xml
+> <?xml version="1.0" encoding="UTF-8" ?>
+> <!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+>         "http://mybatis.org/dtd/mybatis-3-config.dtd">
+> <configuration>
+>     <!-- mybatis-config的模板-->
+> </configuration>
+> ```
+>
+> `mapper.xml`
+>
+> ```xml
+> <?xml version="1.0" encoding="UTF-8"?>
+> <!DOCTYPE mapper
+>         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+>         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+> <!--mapper 相当于Dao层接口类的实现类,namespace 放的是实现的接口的路径-->
+> <mapper namespace="com.marshio.dao.StudentDao">
+> 
+> </mapper>
+> 
+> ```
 
 
 
@@ -192,7 +250,3 @@ spring-context 包含spring所需的核心组件，包括core、context、aop、
 - 工厂实例方法
 
 
-
-
-
-> 
