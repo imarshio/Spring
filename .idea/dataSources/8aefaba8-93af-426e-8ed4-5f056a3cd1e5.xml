@@ -753,32 +753,213 @@ SELECT|sys.sys_config:null
       <ObjectGrants>ALL PRIVILEGES!
 </ObjectGrants>
     </user>
-    <table id="233" parent="3" name="db_student"/>
-    <column id="234" parent="233" name="id">
+    <table id="233" parent="3" name="db_no_index"/>
+    <table id="234" parent="3" name="db_stu"/>
+    <table id="235" parent="3" name="db_student">
+      <Collation>utf8_general_ci</Collation>
+    </table>
+    <table id="236" parent="3" name="db_test"/>
+    <table id="237" parent="3" name="mas">
+      <Collation>utf8_general_ci</Collation>
+    </table>
+    <table id="238" parent="3" name="table_index">
+      <Collation>utf8_general_ci</Collation>
+    </table>
+    <table id="239" parent="3" name="table_index1"/>
+    <table id="240" parent="3" name="table_score">
+      <Collation>utf8_general_ci</Collation>
+    </table>
+    <column id="241" parent="233" name="id">
+      <Position>1</Position>
+      <DataType>int(11)|0s</DataType>
+    </column>
+    <column id="242" parent="233" name="str">
+      <Position>2</Position>
+      <DataType>varchar(8)|0s</DataType>
+    </column>
+    <column id="243" parent="234" name="id">
+      <Position>1</Position>
+      <DataType>int(8) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="244" parent="234" name="stu_num">
+      <Position>2</Position>
+      <DataType>int(8)|0s</DataType>
+    </column>
+    <column id="245" parent="234" name="stu_name">
+      <Position>3</Position>
+      <DataType>varchar(16)|0s</DataType>
+    </column>
+    <column id="246" parent="234" name="stu_age">
+      <Position>4</Position>
+      <DataType>int(3)|0s</DataType>
+    </column>
+    <index id="247" parent="234" name="index_union">
+      <ColNames>stu_num
+stu_name
+stu_age</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="248" parent="234" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="249" parent="235" name="id">
+      <Position>1</Position>
+      <DataType>int(8) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="250" parent="235" name="stu_num">
+      <Position>2</Position>
+      <DataType>varchar(8)|0s</DataType>
+    </column>
+    <column id="251" parent="235" name="stu_name">
+      <Position>3</Position>
+      <DataType>varchar(16)|0s</DataType>
+    </column>
+    <column id="252" parent="235" name="stu_age">
+      <Position>4</Position>
+      <DataType>int(3)|0s</DataType>
+    </column>
+    <column id="253" parent="235" name="stu_sex">
+      <Position>5</Position>
+      <DataType>varchar(1)|0s</DataType>
+    </column>
+    <index id="254" parent="235" name="stu_num">
+      <ColNames>stu_num</ColNames>
+      <Unique>1</Unique>
+      <Type>btree</Type>
+    </index>
+    <index id="255" parent="235" name="stuname">
+      <ColNames>stu_name</ColNames>
+      <Type>btree</Type>
+    </index>
+    <index id="256" parent="235" name="stuage">
+      <ColNames>stu_age</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="257" parent="235" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <key id="258" parent="235" name="stu_num">
+      <ColNames>stu_num</ColNames>
+      <UnderlyingIndexName>stu_num</UnderlyingIndexName>
+    </key>
+    <column id="259" parent="236" name="id">
       <Position>1</Position>
       <DataType>int(11)|0s</DataType>
       <NotNull>1</NotNull>
       <SequenceIdentity>null</SequenceIdentity>
     </column>
-    <column id="235" parent="233" name="stu_num">
+    <column id="260" parent="236" name="name">
       <Position>2</Position>
-      <DataType>varchar(8)|0s</DataType>
-      <NotNull>1</NotNull>
-    </column>
-    <column id="236" parent="233" name="stu_name">
-      <Position>3</Position>
       <DataType>varchar(16)|0s</DataType>
-      <NotNull>1</NotNull>
     </column>
-    <column id="237" parent="233" name="stu_sex">
-      <Position>4</Position>
-      <DataType>varchar(1)|0s</DataType>
-    </column>
-    <column id="238" parent="233" name="stu_age">
-      <Position>5</Position>
+    <column id="261" parent="236" name="age">
+      <Position>3</Position>
       <DataType>int(3)|0s</DataType>
     </column>
-    <key id="239" parent="233" name="PRIMARY">
+    <index id="262" parent="236" name="index_name">
+      <ColNames>name</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="263" parent="236" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="264" parent="237" name="bina">
+      <Position>1</Position>
+      <DataType>char(255)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <key id="265" parent="237" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>bina</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="266" parent="238" name="id">
+      <Position>1</Position>
+      <DataType>int(10) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="267" parent="238" name="index_1">
+      <Position>2</Position>
+      <DataType>int(10) unsigned|0s</DataType>
+    </column>
+    <column id="268" parent="238" name="index_2">
+      <Position>3</Position>
+      <DataType>varchar(10)|0s</DataType>
+      <Collation>latin1_swedish_ci</Collation>
+    </column>
+    <column id="269" parent="238" name="index_3">
+      <Position>4</Position>
+      <DataType>varchar(10)|0s</DataType>
+      <NotNull>1</NotNull>
+      <Collation>latin1_swedish_ci</Collation>
+    </column>
+    <key id="270" parent="238" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="271" parent="239" name="id">
+      <Position>1</Position>
+      <DataType>int(10) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="272" parent="239" name="index_1">
+      <Position>2</Position>
+      <DataType>int(10) unsigned|0s</DataType>
+    </column>
+    <column id="273" parent="239" name="index_2">
+      <Position>3</Position>
+      <DataType>varchar(10)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <column id="274" parent="239" name="index_3">
+      <Position>4</Position>
+      <DataType>varchar(10)|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="275" parent="239" name="indexs">
+      <ColNames>index_1
+index_2
+index_3</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="276" parent="239" name="PRIMARY">
+      <NameSurrogate>1</NameSurrogate>
+      <ColNames>id</ColNames>
+      <Primary>1</Primary>
+    </key>
+    <column id="277" parent="240" name="id">
+      <Position>1</Position>
+      <DataType>int(8)|0s</DataType>
+      <NotNull>1</NotNull>
+      <SequenceIdentity>null</SequenceIdentity>
+    </column>
+    <column id="278" parent="240" name="std_score">
+      <Position>2</Position>
+      <DataType>mediumint(4)|0s</DataType>
+    </column>
+    <column id="279" parent="240" name="stu_id">
+      <Position>3</Position>
+      <DataType>int(8) unsigned|0s</DataType>
+      <NotNull>1</NotNull>
+    </column>
+    <index id="280" parent="240" name="stu_id">
+      <ColNames>stu_id</ColNames>
+      <Type>btree</Type>
+    </index>
+    <key id="281" parent="240" name="PRIMARY">
       <NameSurrogate>1</NameSurrogate>
       <ColNames>id</ColNames>
       <Primary>1</Primary>
