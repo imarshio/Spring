@@ -1,20 +1,23 @@
-package com.marshio.pojo;
+package com.marshio.ioc.pojo;
 
-
+import java.util.Date;
+import java.util.List;
 
 /**
  * @author masuo
- * @date 2022/01/15/ 下午3:25
- * @description
+ * @data 21/1/2022 下午3:43
+ * @Description TODO
  */
 
 public class Student {
-
     private int id;
     private String stuNum;
     private String stuName;
     private String stuSex;
     private int stuAge;
+    private Date stuBirth;
+    private Clazz clazz;
+    private List<String> hobbies;
 
     @Override
     public String toString() {
@@ -24,6 +27,9 @@ public class Student {
                 ", stuName='" + stuName + '\'' +
                 ", stuSex='" + stuSex + '\'' +
                 ", stuAge=" + stuAge +
+                ", stuBirth=" + stuBirth +
+                ", clazz=" + clazz +
+                ", hobies=" + hobbies +
                 '}';
     }
 
@@ -83,5 +89,29 @@ public class Student {
 
     public void setStuAge(int stuAge) {
         this.stuAge = stuAge;
+    }
+
+    public Date getStuBirth() {
+        return stuBirth;
+    }
+
+    public void setStuBirth(Date stuBirth) {
+        this.stuBirth = stuBirth;
+    }
+
+    public Clazz getClazz() {
+        return clazz;
+    }
+
+    public void setClazz(Clazz clazz) {
+        this.clazz = clazz;
+    }
+
+    public List<String> getHobbies() {
+        return hobbies;
+    }
+
+    public void setHobbies(List<String> hobbies) {
+        this.hobbies = hobbies;
     }
 }
