@@ -11,6 +11,8 @@
     <modules>
         <module>Spring-Aop</module>
         <module>Spring-IoC</module>
+        <module>Spring-Mybatis</module>
+        <module>Spring-MVC</module>
     </modules>
     <packaging>pom</packaging>
     <dependencies>
