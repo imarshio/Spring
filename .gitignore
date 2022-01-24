@@ -18,7 +18,5 @@ bin-release/
 # information for Eclipse / Flash Builder.
 
 target/
-pom.xml
-src/main/resources/mybatis-config.xml
 .idea/
 

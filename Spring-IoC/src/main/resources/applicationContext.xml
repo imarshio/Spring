@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 这里我们使用bean来实验Spring的对象管理 abstract:表明Spring容器不会为该对象创建实例 -->
+    <bean id="studentDao0" class="com.marshio.ioc.dao.StudentIocDao" abstract="true"/>
+
+    <!-- 无参创建实例对象，  -->
+    <bean id="studentDao1" class="com.marshio.ioc.dao.impl.StudentDaoImpl"/>
+
+    <bean id="data" class="java.util.Date"/>
+    <bean id="clazz" class="com.marshio.ioc.pojo.Clazz"/>
+    <!-- 利用依赖注入对象参数   -->
+    <bean id="student1" class="com.marshio.ioc.pojo.Student">
+        <!--简单类型 -->
+        <property name="stuNum" value="2017" />
+        <property name="stuName" value="mas" />
+        <property name="stuAge" value="20" />
+        <property name="stuSex" value="0" />
+        <!--日期类型：方式 1 -->
+        <property name="stuBirth" ref="data"/>
+        <!--自定义对象类型:方式 1 -->
+        <property name="clazz" ref="clazz"/>
+        <!--集合类型 -->
+        <property name="hobbies">
+            <list>
+                <value>旅游</value>
+                <value>电影</value>
+                <value>Java</value>
+            </list>
+        </property>
+    </bean>
+
+    <bean id="student2" class="com.marshio.ioc.pojo.Student">
+        <!--简单类型 -->
+        <property name="stuNum" value="2017" />
+        <property name="stuName" value="mas" />
+        <property name="stuAge" value="20" />
+        <property name="stuSex" value="0" />
+        <!--日期类型：方式 2 -->
+        <property name="stuBirth">
+            <bean class="java.util.Date"/>
+        </property>
+        <!--自定义对象类型:方式 2 -->
+        <property name="clazz">
+            <bean class="com.marshio.ioc.pojo.Clazz"/>
+        </property>
+    </bean>
+
+</beans>
