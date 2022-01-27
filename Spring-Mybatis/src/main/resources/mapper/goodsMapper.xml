@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.marshio.mybatis.dao.GoodsDao">
+    <resultMap id="goods" type="goods">
+        <id column="gid" property="gid"/>
+        <result column="good_name" property="goodName"/>
+        <result column="good_num" property="goodNum"/>
+        <result column="good_price" property="goodPrice"/>
+        <result column="good_brand" property="goodBrand"/>
+        <result column="good_unit" property="goodUnit"/>
+        <result column="good_shelfTime" property="goodShelfTime"/>
+        <result column="good_desc" property="goodDesc"/>
+    </resultMap>
+
+    <insert id="addGoods">
+        insert into db_goods (gid, good_name, good_num, good_price, good_brand, good_unit, good_shelfTime, good_desc)
+        VALUES (0, #{goodName}, #{goodNum}, #{goodPrice}, #{goodBrand}, #{goodUnit}, #{goodShelfTime}, #{goodDesc})
+    </insert>
+
+    <delete id="delGoodsById">
+        delete
+        from db_goods
+        where gid = #{gid}
+    </delete>
+
+    <select id="queryGoods" resultMap="goods" resultType="list">
+        select gid,good_name,good_num,good_price,good_brand,good_unit,good_shelfTime,good_desc
+        from db_goods
+    </select>
+
+    <select id="queryGoodsWithMap" resultMap="goods" parameterType="java.util.Map">
+        select gid,
+        good_name,
+        good_num,
+        good_price,
+        good_brand,
+        good_unit,
+        good_shelfTime,
+        good_desc
+        from db_goods
+        # 如果想要直接使用if语句，那么就需要在条件前拼接一个语句，不然可能会导致后面的条件都为空，然后where字句会报错
+        where 1=1
+        <if test="minPrice != null">
+            # &gt; ==> 大于
+            and good_price &gt; #{minPrice}
+        </if>
+        <if test="maxPrice != null">
+            # &lt; ==> 小于
+            and good_price &lt; #{maxPrice}
+        </if>
+        <if test="goodBrand != null">
+            and good_brand = #{goodBrand}
+        </if>
+    </select>
+
+    <select id="queryGoodsWithParams" resultMap="goods"
+            parameterType="com.marshio.mybatis.dao.conditions.MemberSearchCondition">
+        select gid,
+        good_name,
+        good_num,
+        good_price,
+        good_brand,
+        good_unit,
+        good_shelfTime,
+        good_desc
+        from db_goods
+        <where>
+            <if test="goodName != null">
+                and good_name = #{goodName}
+            </if>
+            <if test="minPrice != null">
+                and good_price &gt; #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and good_price &lt; #{maxPrice}
+            </if>
+            <if test="goodBrand != null">
+                and good_brand = #{goodBrand}
+            </if>
+        </where>
+    </select>
+
+    <select id="queryGoodsWithTrim" resultMap="goods"
+            parameterType="com.marshio.mybatis.dao.conditions.MemberSearchCondition">
+        select gid,
+        good_name,
+        good_num,
+        good_price,
+        good_brand,
+        good_unit,
+        good_shelfTime,
+        good_desc
+        from db_goods
+        # 使用trim需要自己去除第一个子句的 衔接符 （and/or）
+        # prefix : 前置语句 prefixOverrides : 需要被覆盖的前置衔接符
+        # suffix : 后置语句 suffixOverrides : 需要被覆盖的后置衔接符
+        <trim prefix="where" prefixOverrides="and | or" suffix="" suffixOverrides="">
+            <if test="goodName != null">
+                and good_name = #{goodName}
+            </if>
+            <if test="minPrice != null">
+                and good_price &gt; #{minPrice}
+            </if>
+            <if test="maxPrice != null">
+                and good_price &lt; #{maxPrice}
+            </if>
+            <if test="goodBrand != null">
+                and good_brand = #{goodBrand}
+            </if>
+        </trim>
+    </select>
+
+    <select id="queryGoodsWithForEach" resultMap="goods" resultType="list">
+
+    </select>
+
+    <update id="updateGoods">
+        update db_goods
+        set good_name=#{goodName},
+            good_num=#{goodNum},
+            good_price=#{goodPrice},
+            good_brand=#{goodBrand},
+            good_unit=#{goodUnit},
+            good_shelfTime=#{goodShelfTime},
+            good_desc=#{goodDesc}
+        where gid = #{gid}
+    </update>
+</mapper>

@@ -1,13 +1,14 @@
 package com.marshio.aop.dao.impl;
 
 import com.marshio.aop.dao.StaticDao;
+import org.springframework.stereotype.Component;
 
 /**
  * @author masuo
  * @data 24/1/2022 下午2:21
  * @Description 被代理对象,
  */
-
+@Component
 public class StudentDaoImpl implements StaticDao {
 
     @Override

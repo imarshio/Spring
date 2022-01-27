@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<!--mapper文件负责联通业务与数据库，负责将数据从数据库取出来返回给业务层-->
+<!--namespace是接口类（如果无需特殊处理），如果数据需要特殊处理则可以是接口实现类-->
+<mapper namespace="com.marshio.mybatis.dao.StudentDao">
+
+    <cache eviction="FIFO"
+           flushInterval="60000"
+           size="512"
+           readOnly="true"/>
+
+    <!-- 插入无需设置返回类型 -->
+    <insert id="addStudent">
+        insert into db_student (stu_num, stu_name, stu_age, stu_sex)
+        VALUES (#{stuNum}, #{stuName}, #{stuAge}, #{stuSex})
+    </insert>
+
+    <!-- 主键回填，设置useGeneratedKeys为true，keyProperty为实体对象的ID属性名称 -->
+    <insert id="addStudentBacKey" useGeneratedKeys="true" keyProperty="id">
+        insert into db_student (stu_num, stu_name, stu_age, stu_sex)
+        VALUES (#{stuNum}, #{stuName}, #{stuAge}, #{stuSex})
+    </insert>
+
+    <!-- 无需设置返回类型 -->
+    <delete id="delStudent">
+        delete
+        from db_student
+        where stu_num = #{stuNum}
+    </delete>
+
+    <!-- 选择需要设置返回的数据类型 -->
+    <!-- 除此之外，还需要将返回的数据字段与实体类映射 -->
+    <select id="queryStudents" resultType="student">
+        select id id, stu_num stuNum, stu_name stuName, stu_age stuAge, stu_sex stuSex
+        from db_student
+    </select>
+
+    <!-- 除此之外，还可以设置 -->
+    <resultMap id="student" type="student">
+        <id column="id" property="id"/>
+        <result column="stu_num" property="stuNum"/>
+        <result column="stu_name" property="stuName"/>
+        <result column="stu_age" property="stuAge"/>
+        <result column="stu_sex" property="stuSex"/>
+    </resultMap>
+
+    <!-- 此时我们可以设置resultMap来代替resultType -->
+    <select id="queryStudentByNum" resultMap="student">
+        select id,
+               stu_num,
+               stu_name,
+               stu_age,
+               stu_sex
+        from db_student
+        where stu_num = #{stuNum}
+    </select>
+
+    <!--  -->
+    <select id="queryStudentByNumWithAlias" resultType="student">
+        select *
+        from db_student
+        where stu_num = #{stuNum}
+    </select>
+
+    <!--  -->
+    <update id="updateStudentNoResult">
+        update db_student
+        set stu_num=#{stuNum},
+            stu_name=#{stuName},
+            stu_sex=#{stuSex},
+            stu_age=#{stuAge}
+        where id = #{id}
+    </update>
+
+    <!--  -->
+    <update id="updateStudentBack">
+        update db_student
+        set stu_num=#{stuNum},
+            stu_name=#{stuName},
+            stu_sex=#{stuSex},
+            stu_age=#{stuAge}
+        where id = #{id}
+    </update>
+
+</mapper>

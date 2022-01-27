@@ -1,10 +1,45 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="http://www.springframework.org/schema/beans
         http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
         http://www.springframework.org/schema/aop
         http://www.springframework.org/schema/aop/spring-aop.xsd">
-    <!--添加aop规范-->
+    <!--添加context、aop规范-->
+
+    <!-- 声明context使用注解配置 -->
+    <context:annotation-config/>
+
+    <!-- 声明Spring工厂注解的扫描范围 -->
+    <context:component-scan base-package="com.marshio.aop.pojo"/>
+
+    <!-- 基于注解配置的aop代理-->
+    <aop:aspectj-autoproxy/>
+
+    <bean id="userDao" class="com.marshio.aop.dao.impl.UserDaoImpl"/>
+    <bean id="studentDao" class="com.marshio.aop.dao.impl.StudentDaoImpl"/>
+    <!--声明切面类，即切入点前后需要-->
+    <bean id="transactionManager" class="com.marshio.aop.utils.TransactionManagerOnXml"/>
+
+    <!--配置增强功能（AOP）-->
+    <aop:config>
+        <!--声明切入点（需要被事务管理的类），切入点是业务代码，比如一个提交业务，或者一个新增业务。-->
+        <!--
+            execution(* com.marshio.aop.dao.*.*(..))
+            第一个参数 * 代表的是返回类型，不限制
+            第二个参数 com.marshio.aop.dao.*.*(..) 代表的是dao包下面的所有类的所有方法的所有参数类型
+        -->
+        <aop:pointcut id="allDao" expression="execution(* com.marshio.aop.dao.*.*(..))"/>
+
+        <!--声明切面类方法-->
+        <aop:aspect ref="transactionManager" >
+            <!--通知-->
+            <aop:before method="begin" pointcut-ref="allDao"/>
+            <aop:after method="commit" pointcut-ref="allDao"/>
+        </aop:aspect>
+    </aop:config>
 </beans>

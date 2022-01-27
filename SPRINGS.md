@@ -10,7 +10,7 @@ typora-copy-images-to: upload
 
 参考：https://www.bilibili.com/video/BV1wi4y1P7Jm?p=5&spm_id_from=333.1007.top_right_bar_window_history.content.click
 
-## Spring框架图
+## Spring框架
 
 ![img](https://gimg2.baidu.com/image_search/src=http%3A%2F%2Fimage.bubuko.com%2Finfo%2F201912%2F20191215203642824082.png&refer=http%3A%2F%2Fimage.bubuko.com&app=2002&size=f9999,10000&q=a80&n=0&g=0n&fmt=jpeg?sec=1644468709&t=debf909e169b692277d269980268a587)
 
@@ -50,7 +50,7 @@ typora-copy-images-to: upload
 
 
 
-## Spring 框架
+## Spring Framework
 
 ### SpringIoC
 
@@ -202,6 +202,28 @@ public class User {
 > - PreDestory：方法注解，声明该方法为类的销毁方法，对象从容器中释放之前，相当于`bean`的`destory-method`方法
 > - Autowired：属性注解，方法注解，声明当前属性自动装配，默认为`byType`。
 > - Resource：属性注解，
+
+**更新配置文件**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 声明使用注解配置 -->
+    <context:annotation-config/>
+
+    <!-- 声明Spring工厂注解的扫描范围 -->
+    <context:component-scan base-package="com.marshio.ioc.pojo"/>
+</beans>
+```
+
+
 
 - **Service**
 
@@ -719,11 +741,243 @@ public class CGLibDynamicProxy implements MethodInterceptor {
 
 #### 使用
 
+##### 切面类
+
+```java
+public class TransactionManager {
+
+    public void begin(){
+        System.out.println("开启事务...");
+    }
+
+    public void commit(){
+        System.out.println("提交事务...");
+    }
+}
+```
+
+##### XML
+
+> XML需要配置`applicationContext.xml`文件，在这里面配置AOP 的功能。
+>
+> 配置步骤
+>
+> - 创建切面类，在切面类中定义切点方法
+> - 将切面类配置给Spring容器
+> - 声明切入点
+> - 配置AOP通知策略
+
+```xml
+<!--声明切面类，即切入点前后需要配置的类-->
+<bean id="transactionManager" class="com.marshio.aop.utils.TransactionManager"/>
+
+<!--配置增强功能（AOP）-->
+<aop:config>
+    <!--声明切入点（需要被事务管理的类），切入点是业务代码，比如一个提交业务，或者一个新增业务。-->
+    <!--
+       execution(* com.marshio.aop.dao.*.*(..))
+       第一个参数 * 代表的是返回类型，不限制
+       第二个参数 com.marshio.aop.dao.*.*(..) 代表的是dao包下面的所有类的所有方法的所有参数类型
+    -->
+    <aop:pointcut id="allDao" expression="execution(* com.marshio.aop.dao.*.*(..))"/>
+
+    <!--声明切面类方法-->
+    <aop:aspect ref="transactionManager" >
+        <!--通知-->
+        <aop:before method="begin" pointcut-ref="allDao"/>
+        <aop:after method="commit" pointcut-ref="allDao"/>
+    </aop:aspect>
+</aop:config>
+```
+
+测试
+
+```java
+@Test
+public void testXML() {
+    ApplicationContext app = new ClassPathXmlApplicationContext("applicationContext.xml");
+    StaticDao userDao = (StaticDao) app.getBean("userDao");
+    userDao.insert();
+}
+```
+
+##### 切入点声明
+
+```xml
+<!--使用aop:pointcut标签声明切入点：切入点可以是一个方法-->
+<aop:pointcut id="book_insert" expression="execution(* com.qfedu.dao.BookDAOImpl.insert())"/>
+
+<!--BookDAOImpl类中所有无参数无返回值的方法-->
+<aop:pointcut id="book_pc1" expression="execution(void com.qfedu.dao.BookDAOImpl.*())"/>
+
+<!--BookDAOImpl类中所有无返回值的方法-->
+<aop:pointcut id="book_pc2" expression="execution(void com.qfedu.dao.BookDAOImpl.*(..))"/>
+
+<!--BookDAOImpl类中所有无参数的方法-->
+<aop:pointcut id="book_pc3" expression="execution(* com.qfedu.dao.BookDAOImpl.*())"/>
+
+<!--BookDAOImpl类中所有方法-->
+<aop:pointcut id="book_pc4" expression="execution(* com.qfedu.dao.BookDAOImpl.*(..))"/>
+
+<!--dao包中所有类中的所有方法-->
+<aop:pointcut id="pc5" expression="execution(* com.qfedu.dao.*.*(..))"/>
+
+<!--dao包中所有类中的insert方法-->
+<aop:pointcut id="pc6" expression="execution(* com.qfedu.dao.*.insert(..))"/>
+
+<!--所有类方法-->
+<aop:pointcut id="pc7" expression="execution(* *(..))"/>
+```
+
+##### 通知策略
+
+> AOP通知策略：就是声明将切面类中的切点方法如何植入到切入点
+>
+> - before
+> - after
+> - before-throwing
+> - after-throwing
+> - around
+
+```xml
+<bean id="transactionManager" class="com.marshio.aop.utils.TransactionManager"/>
+<aop:config>
+    <!--使用aop:pointcut标签声明切入点：切入点可以是一个方法-->
+    <aop:pointcut id="book_insert" expression="execution(* com.qfedu.dao.BookDAOImpl.insert())"/>
+
+    <aop:aspect ref="transactionManager">
+        <!--aop:before 前置通知，切入到指定切入点之前-->
+        <aop:before method="method1" pointcut-ref="book_insert"/>
+        <!--aop:after 后置通知，切入到指定切入点之后-->
+        <aop:after method="method2" pointcut-ref="book_insert"/>
+        <!--aop:after-throwing 异常通知，切入点抛出异常之后-->
+        <aop:after-throwing method="method3" pointcut-ref="book_insert"/>
+        <!--aop:after-returning 方法返回值返回之后，对于一个Java方法而言return返回值也是方法的一部分
+             因此“方法返回值返回之后”和“方法执行结束”是同一个时间点，随意after 和 after-returning根据配置
+             的顺序决定执行顺序-->
+        <aop:after-returning method="method4" pointcut-ref="book_insert"/>
+        <aop:around method="method5" pointcut-ref="book_insert"/>
+    </aop:aspect>
+</aop:config>
+```
 
 
 
+##### 注解
 
-### Spring文件模板
+**更新配置文件**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        http://www.springframework.org/schema/context/spring-context.xsd
+        http://www.springframework.org/schema/aop
+        http://www.springframework.org/schema/aop/spring-aop.xsd">
+    <!--添加context、aop规范-->
+
+    <!-- 声明context使用注解配置 -->
+    <context:annotation-config/>
+
+    <!-- 声明Spring工厂注解的扫描范围 -->
+    <context:component-scan base-package="com.marshio.aop.pojo"/>
+
+    <!-- 基于注解配置的aop代理-->
+    <aop:aspectj-autoproxy/>
+</beans>
+```
+
+**使用**
+
+```java
+package com.marshio.aop.utils;
+
+import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.annotation.*;
+import org.springframework.stereotype.Component;
+
+/**
+ * @author masuo
+ * @data 25/1/2022 上午8:21
+ * @Description 注解式事务管理 --- 虽然是注解类，但是步骤都是一样的
+ * Component：表示将此类交给Spring容器管理，是一个对象的意思
+ * Aspect：表示这个类是一个切面类
+ */
+@Component
+@Aspect
+public class TransactionManagerOnAnnotation {
+
+    //声明切入点
+    @Pointcut("execution(* com.marshio.aop.dao.*.*(..))")
+    public void pointCut() {
+    }
+
+    @Before("pointCut()")
+    public void begin() {
+        System.out.println("开启事务...");
+    }
+
+    @After("pointCut()")
+    public void commit() {
+        System.out.println("提交事务...");
+    }
+
+    @AfterThrowing("pointCut()")
+    public void afterThrow() {
+        System.out.println("事务回滚。。。");
+    }
+
+    @AfterReturning("pointCut()")
+    public void afterReturn() {
+        //AfterReturning == After , 因为方法返回值返回之后，对于一个Java方法而言return返回值也是方法的一部分
+        System.out.println("提交事务。。。");
+    }
+
+    @Around("pointCut()")
+    public Object around(ProceedingJoinPoint point) {
+        System.out.println("");
+        long begin = System.currentTimeMillis();
+        Object o = null;
+        try {
+            o = point.proceed();
+        } catch (Throwable throwable) {
+            throwable.printStackTrace();
+        }
+        long commit = System.currentTimeMillis();
+        System.out.println("time:"+(commit-begin));
+        return o;
+    }
+}
+```
+
+**测试**
+
+```java
+public class AnnotationDemo {
+
+    @Test
+    public void testAnnotation() {
+        ApplicationContext app = new ClassPathXmlApplicationContext("applicationContext.xml");
+        StaticDao userDao = (StaticDao) app.getBean("userDao");
+        userDao.insert();
+    }
+}
+```
+
+## Spring MVC
+
+> Spring MVC是一个基于Spring的实现了MVC设计模式轻量级Web框架，实现了Model，View，Controller分离，将web层进行解耦，把复杂的web应用分成逻辑清晰的几部分，简化开发，减少出错，方便组内开发人员之间的配合。
+
+![image-20220125102832124](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220125102833.png)
+
+
+
+## Spring文件模板
 
 > `applicationContext.xml`
 >
@@ -797,12 +1051,4 @@ public class CGLibDynamicProxy implements MethodInterceptor {
 > 
 
 
-
-#### Bean
-
-##### Bean实例化的三种方式
-
-- 无参构造方法
-- 工厂静态方法
-- 工厂实例方法
 

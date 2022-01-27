@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <!-- 加载数据源配置信息 -->
+    <properties resource="datasource/mybatis.properties" />
+    <!--    <properties>-->
+    <!--        <property name="driver" value="com.mysql.jdbc.Driver"/>-->
+    <!--        <property name="url" value="jdbc:mysql://localhost:3306/database1"/>-->
+    <!--        <property name="username" value="root"/>-->
+    <!--        <property name="password" value="root"/>-->
+    <!--    </properties>-->
+    
+    <settings>
+        <setting name="cacheEnabled" value="true"/>
+    </settings>
+
+    <typeAliases>
+        <typeAlias  alias="student" type="com.marshio.mybatis.pojo.Student"/>
+        <typeAlias  alias="goods" type="com.marshio.mybatis.pojo.Goods"/>
+    </typeAliases>
+
+    <!--    <typeHandlers>-->
+    <!--        <typeHandler handler=""-->
+    <!--    </typeHandlers>-->
+    
+    <plugins>
+        <plugin interceptor="com.github.pagehelper.PageInterceptor"/>
+    </plugins>
+
+    <environments default="dev1">
+
+        <!-- 数据库配置信息    -->
+        <environment id="dev">
+            <!--
+            事务管理方式，type查看官网可知，取值为{JDBC，MANAGED}
+            JDBC：代表你无需对事务进行较多的管理，他会自动提交事务，自动进行事务回滚,也可以手动控制，默认是自动
+            MANAGED：这种方式下，他什么都不会做，不提交，不回滚，他将事务的整个生命周期交给Spring容器管理
+                且默认情况下，他会关闭数据库的连接，当然这样做有一点不好，那就是我们需要频繁的打开关闭打开关闭数据库的连接，这样耗时又费力
+                所以我们都会通过设置closeConnection为false来阻止他关闭连接
+            -->
+            <transactionManager type="JDBC">
+                <property name="closeConnection" value="false"/>
+            </transactionManager>
+            <!--数据库连接信息， type的取值为 POOLED 或 UNPOOLED 或 JNDI-->
+            <!--POOLED：启用mybatis自带的连接池-->
+            <!--UNPOOLED：不启用连接池-->
+            <!--JNDI：配置第三方数据源连接信息-->
+            <!--还可以使用自定义数据源，如druid-->
+            <dataSource type="POOLED">
+                <property name="driver" value="com.mysql.jdbc.Driver"/>
+                <!--在property标签内是不能使用&，需要使用&amp;来替换-->
+                <property name="url" value="jdbc:mysql://192.168.64.135:3309/mas?useSSL=false&amp;characterEncoding=utf-8"/>
+                <property name="username" value="root"/>
+                <property name="password" value="root"/>
+            </dataSource>
+        </environment>
+
+        <environment id="dev1">
+            <transactionManager type="MANAGED">
+                <property name="closeConnection" value="false"/>
+            </transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="${mybatis.driver}"/>
+                <property name="url" value="${mybatis.url}"/>
+                <property name="username" value="${mybatis.username}"/>
+                <property name="password" value="${mybatis.password}"/>
+            </dataSource>
+        </environment>
+
+        <environment id="dev2">
+            <transactionManager type="MANAGED">
+                <property name="closeConnection" value="false"/>
+            </transactionManager>
+            <dataSource type="POOLED">
+                <property name="driver" value="${driver}"/>
+                <property name="url" value="${url}"/>
+                <property name="username" value="${username}"/>
+                <property name="password" value="${password}"/>
+            </dataSource>
+        </environment>
+
+    </environments>
+
+
+    <mappers>
+        <!-- 类路径 -->
+        <mapper resource="mapper/studentMapper.xml" />
+        <mapper resource="mapper/goodsMapper.xml" />
+        <!--  映射接口类 -->
+        <mapper class="com.marshio.mybatis.mapper.StudentMapper"/>
+        <!--  映射接口包 -->
+<!--        <package name="com.marshio.mybatis.mapper"/>-->
+    </mappers>
+
+</configuration>

@@ -1,7 +1,17 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd">
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/context
+       http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 声明使用注解配置 -->
+    <context:annotation-config/>
+
+    <!-- 声明Spring工厂注解的扫描范围 -->
+    <context:component-scan base-package="com.marshio.ioc.pojo"/>
 
     <!-- 这里我们使用bean来实验Spring的对象管理 abstract:表明Spring容器不会为该对象创建实例 -->
     <bean id="studentDao0" class="com.marshio.ioc.dao.StudentIocDao" abstract="true"/>
@@ -14,10 +24,10 @@
     <!-- 利用依赖注入对象参数   -->
     <bean id="student1" class="com.marshio.ioc.pojo.Student">
         <!--简单类型 -->
-        <property name="stuNum" value="2017" />
-        <property name="stuName" value="mas" />
-        <property name="stuAge" value="20" />
-        <property name="stuSex" value="0" />
+        <property name="stuNum" value="2017"/>
+        <property name="stuName" value="mas"/>
+        <property name="stuAge" value="20"/>
+        <property name="stuSex" value="0"/>
         <!--日期类型：方式 1 -->
         <property name="stuBirth" ref="data"/>
         <!--自定义对象类型:方式 1 -->
@@ -34,10 +44,10 @@
 
     <bean id="student2" class="com.marshio.ioc.pojo.Student">
         <!--简单类型 -->
-        <property name="stuNum" value="2017" />
-        <property name="stuName" value="mas" />
-        <property name="stuAge" value="20" />
-        <property name="stuSex" value="0" />
+        <property name="stuNum" value="2017"/>
+        <property name="stuName" value="mas"/>
+        <property name="stuAge" value="20"/>
+        <property name="stuSex" value="0"/>
         <!--日期类型：方式 2 -->
         <property name="stuBirth">
             <bean class="java.util.Date"/>
