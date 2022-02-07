@@ -26,6 +26,7 @@
         <module>Spring-IoC</module>
         <module>Spring-Mybatis</module>
         <module>Spring-MVC</module>
+        <module>Spring-Mybatis-Druid</module>
     </modules>
     <packaging>pom</packaging>
     <dependencies>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+
+    <properties resource="datasource/druid.properties"/>
+
+    <settings>
+        <!--一级缓存默认开启，无需设置-->
+        <setting name="logImpl" value="LOG4J"/>
+
+    </settings>
+
+
+    <typeAliases>
+        <typeAlias type="com.marshio.druid.pojo.Goods" alias="goods"/>
+    </typeAliases>
+
+    <environments default="dev">
+
+        <environment id="druid">
+            <transactionManager type="JDBC">
+                <property name="closeConnection" value="false"/>
+            </transactionManager>
+            <!-- 这里我们将数据库连接池替换为DruidDataSourceFactory -->
+            <dataSource type="com.marshio.druid.druid.DruidDataSourceFactory">
+                <!-- 这里注意，使用Druid时，原driver的name变为driverClass，原url的name变为jdbcUrl -->
+                <property name="driverClass" value="${druid.driver}"/>
+                <property name="jdbcUrl" value="${druid.url}"/>
+                <property name="username" value="${druid.username}"/>
+                <property name="password" value="${druid.password}"/>
+            </dataSource>
+        </environment>
+    </environments>
+
+    <mappers>
+        <mapper resource="mapper/goodsMapper.xml"/>
+    </mappers>
+
+
+</configuration>

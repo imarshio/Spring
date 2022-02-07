@@ -1,7 +1,7 @@
-package com.marshio.mybatis.dao;
+package com.marshio.druid.dao;
 
-import com.marshio.mybatis.dao.conditions.MemberSearchCondition;
-import com.marshio.mybatis.pojo.Goods;
+import com.marshio.druid.dao.conditions.MemberSearchCondition;
+import com.marshio.druid.pojo.Goods;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.HashMap;
@@ -12,6 +12,7 @@ import java.util.List;
  * @data 27/1/2022 上午11:41
  * @Description 商品 持久层
  */
+
 
 public interface GoodsDao {
 

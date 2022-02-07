@@ -3,6 +3,7 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
 
+   
     <!-- 加载数据源配置信息 -->
     <properties resource="datasource/mybatis.properties" />
     <!--    <properties>-->
@@ -14,6 +15,7 @@
     
     <settings>
         <setting name="cacheEnabled" value="true"/>
+        <setting name="logImpl" value="LOG4J"/>
     </settings>
 
     <typeAliases>

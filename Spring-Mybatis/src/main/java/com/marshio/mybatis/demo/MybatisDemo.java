@@ -1,19 +1,24 @@
 package com.marshio.mybatis.demo;
 
+import com.marshio.mybatis.dao.GoodsDao;
 import com.marshio.mybatis.dao.StudentDao;
+import com.marshio.mybatis.pojo.Goods;
 import com.marshio.mybatis.pojo.Student;
 import com.marshio.mybatis.utils.MybatisUtil;
 import org.apache.ibatis.io.Resources;
 import org.apache.ibatis.session.SqlSession;
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import org.apache.log4j.Logger;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Stream;
 
 /**
  * @author masuo
@@ -23,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 
 public class MybatisDemo {
 
+    private static final Logger logger = Logger.getLogger(MybatisDemo.class);
     @Test
     public void testMybatis() {
         try {
@@ -109,6 +115,18 @@ public class MybatisDemo {
         }
     }
 
-
+    /**
+     * 测试日志的功能
+     * @param args 参数
+     */
+    public static void main(String[] args) {
+        SqlSession sqlSession = MybatisUtil.getSqlSession();
+        GoodsDao mapper = sqlSession.getMapper(GoodsDao.class);
+        List<Goods> goods = mapper.queryGoods();
+        logger.debug("first");
+        logger.info("search all");
+        Stream<Goods> stream = goods.stream();
+        System.out.println(stream.count());
+    }
 
 }

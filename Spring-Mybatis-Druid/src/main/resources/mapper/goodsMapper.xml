@@ -2,7 +2,10 @@
 <!DOCTYPE mapper
         PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.marshio.mybatis.dao.GoodsDao">
+<mapper namespace="com.marshio.druid.dao.GoodsDao">
+
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" blocking="" type=""/>
+
     <resultMap id="goods" type="goods">
         <id column="gid" property="gid"/>
         <result column="good_name" property="goodName"/>
@@ -55,7 +58,7 @@
     </select>
 
     <select id="queryGoodsWithParams" resultMap="goods"
-            parameterType="com.marshio.mybatis.dao.conditions.MemberSearchCondition">
+            parameterType="com.marshio.druid.dao.conditions.MemberSearchCondition">
         select
         <include refid="params"/>
         from db_goods
@@ -76,7 +79,7 @@
     </select>
 
     <select id="queryGoodsWithTrim" resultMap="goods"
-            parameterType="com.marshio.mybatis.dao.conditions.MemberSearchCondition">
+            parameterType="com.marshio.druid.dao.conditions.MemberSearchCondition">
         select
         <include refid="params"/>
         from db_goods

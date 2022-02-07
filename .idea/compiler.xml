@@ -8,6 +8,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="Spring-Aop" />
         <module name="Spring-MVC" />
+        <module name="Spring-Mybatis-Druid" />
         <module name="Spring-Mybatis" />
         <module name="Spring-IoC" />
       </profile>

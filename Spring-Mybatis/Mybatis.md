@@ -246,9 +246,7 @@ public class Student {
 
 
 
-## 创建接口
-
-### 接口类
+## 接口
 
 ```java
 @Mapper
@@ -266,7 +264,7 @@ public interface StudentDao {
 }
 ```
 
-## Mapper
+## 映射
 
 `mapper.xml`模板
 
@@ -445,6 +443,7 @@ public interface StudentDao {
     </environments>
 
     <mappers>
+        <!--配置映射-->
         <mapper resource="mapper.studentMapper.xml" />
     </mappers>
 </configuration>
@@ -481,7 +480,74 @@ public void testMybatis() {
 }
 ```
 
-> 可以看到，每次如果都需要一步一步的构建持久层对象的话，那是费时又费力，所以我们需要将其过程封装成工具类，以后直接调用工具类即可。详情可查看 [封装工具类](# 封装工具类)。
+> 可以看到，每次如果都需要一步一步的构建持久层对象的话，那是费时又费力，所以我们需要将其过程封装成工具类，以后直接调用工具类即可。
+
+## 封装工具类
+
+> 实际业务场景中，我们需要大量的增删改查操作，如果像上面那样写代码的话，我们需要写很多重复冗余的代码，而这些代码功能都一样，都是为了获取`SQL Session`或`***Dao`，所以我们需要将公共代码封装起来，这样我们可以在使用的时候直接调用工具类，这样既减少了代码冗余，又利于代码阅读。
+
+```java
+package com.marshio.mybatis.utils;
+
+import org.apache.ibatis.io.Resources;
+import org.apache.ibatis.session.SqlSession;
+import org.apache.ibatis.session.SqlSessionFactory;
+import org.apache.ibatis.session.SqlSessionFactoryBuilder;
+import java.io.IOException;
+import java.io.InputStream;
+
+/**
+ * @author masuo
+ * @data 25/1/2022 下午5:25
+ * @Description 工具类
+ */
+
+public class MybatisUtil {
+    private static final ThreadLocal<SqlSession> local = new ThreadLocal<>();
+    private static SqlSessionFactory factory;
+
+    static {
+        try {
+            InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
+            factory = new SqlSessionFactoryBuilder().build(is);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * @param autoCommit 是否自动提交
+     * @return SqlSession
+     */
+    public static SqlSession getSqlSession(boolean autoCommit) {
+        SqlSession sqlSession = local.get();
+        if (sqlSession == null) {
+            sqlSession = factory.openSession(autoCommit);
+            local.set(sqlSession);
+        }
+        return sqlSession;
+    }
+
+    /**
+     * 无需手动提交的事务管理器
+     * @return SqlSession
+     */
+    public static SqlSession getSqlSession() {
+        return getSqlSession(true);
+    }
+
+    /**
+     * 获取接口类
+     * @param clazz 接口类
+     * @param <T> 返回的类的类型
+     * @return <T> 泛型
+     */
+    public static <T> T getMapper(Class<? extends T> clazz) {
+        SqlSession sqlSession = getSqlSession(true);
+        return sqlSession.getMapper(clazz);
+    }
+}
+```
 
 ## 工具类测试
 
@@ -561,7 +627,7 @@ public class StudentDaoTest {
 
 ## 使用
 
-### 需求
+ **需求**
 
 > 商品搜索，商品含有多个参数，筛选时默认筛选全部商品，但是可以添加筛选条件，就类似京东商城的商品筛选功能，条件不固定，参数范围不确定。
 
@@ -694,7 +760,40 @@ public interface GoodsDao {
 
 #### FOREACH
 
+> 当我们在`where`字句需要用到`in`是，此时我们可以考虑使用`foreach`，foreach可以循环传递的参数去查找。
+
+**参数构造**
+
+```java
+@Test
+public void queryGoodsWithForEach() {
+    GoodsDao mapper = MybatisUtil.getMapper(GoodsDao.class);
+    List<String> brand = new ArrayList<>();
+    brand.add("apple");
+    brand.add("HP");
+    List<Goods> goods = mapper.queryGoodsWithForEach(brand);
+    for (Goods good : goods) {
+        System.out.println(good.toString());
+    }
+}
+```
+
+**使用**
+
 ```xml
+<select id="queryGoodsWithForEach" resultMap="goods" resultType="list">
+    select
+    gid,good_name,good_num,good_price,good_brand,good_unit,good_shelfTime,good_desc
+    from db_goods
+    where good_brand in
+    # collection 说的是传递的参数的类型
+    # item 是传递的参数别名
+    # separator 分隔符，注意这个分隔符指的是sql语句里的分隔符，
+    # open 开始符号，close 结束符号，当然这里也是sql语句里参数的开始结束符
+    <foreach collection="list" item="brand" separator="," open="(" close=")">
+        #{brand}
+    </foreach>
+</select>
 ```
 
 
@@ -702,77 +801,60 @@ public interface GoodsDao {
 ## 模糊查询
 
 > 在实际项目中我们还有许多查询是模糊查询，在MyBatis中的模糊查询是如何实现的呢？
+>
+> 那下面我们就以上面的数据为例，查询以“apple”开头的商品。
 
-
-
-# 封装工具类
-
-> 实际业务场景中，我们需要大量的增删改查操作，如果像上面那样写代码的话，我们需要写很多重复冗余的代码，而这些代码功能都一样，都是为了获取`SQL Session`或`***Dao`，所以我们需要将公共代码封装起来，这样我们可以在使用的时候直接调用工具类，这样既减少了代码冗余，又利于代码阅读。
-
-
+**接口层**
 
 ```java
-package com.marshio.mybatis.utils;
-
-import org.apache.ibatis.io.Resources;
-import org.apache.ibatis.session.SqlSession;
-import org.apache.ibatis.session.SqlSessionFactory;
-import org.apache.ibatis.session.SqlSessionFactoryBuilder;
-import java.io.IOException;
-import java.io.InputStream;
-
 /**
- * @author masuo
- * @data 25/1/2022 下午5:25
- * @Description 工具类
+ * 模糊查询
+ * 需要注意，在使用模糊查询的时候，我们需要使用${}注入参数，而不是#{}
+ * 与此同时，在使用${}的时候，即使只有一个参数也需要使用@Param注解声明参数的key（非String不需要）,不然会报此参数没有getter和setter方法。
+ * @param key 关键词
+ * @return list
  */
+List<Goods> queryGoodsByKeys(@Param("key") String key);
+```
 
-public class MybatisUtil {
-    private static final ThreadLocal<SqlSession> local = new ThreadLocal<>();
-    private static SqlSessionFactory factory;
+**映射层**
 
-    static {
-        try {
-            InputStream is = Resources.getResourceAsStream("mybatis-config.xml");
-            factory = new SqlSessionFactoryBuilder().build(is);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+```xml
+<select id="queryGoodsByKeys" parameterType="java.lang.String" resultMap="goods">
+    select
+    <include refid="params"/>
+    from db_goods
+    where good_brand like '${key}%'
+</select>
+```
 
-    /**
-     * @param autoCommit 是否自动提交
-     * @return SqlSession
-     */
-    public static SqlSession getSqlSession(boolean autoCommit) {
-        SqlSession sqlSession = local.get();
-        if (sqlSession == null) {
-            sqlSession = factory.openSession(autoCommit);
-            local.set(sqlSession);
-        }
-        return sqlSession;
-    }
+**测试**
 
-    /**
-     * 无需手动提交的事务管理器
-     * @return SqlSession
-     */
-    public static SqlSession getSqlSession() {
-        return getSqlSession(true);
-    }
-
-    /**
-     * 获取接口类
-     * @param clazz 接口类
-     * @param <T> 返回的类的类型
-     * @return <T> 泛型
-     */
-    public static <T> T getMapper(Class<? extends T> clazz) {
-        SqlSession sqlSession = getSqlSession(true);
-        return sqlSession.getMapper(clazz);
+```java
+@Test
+public void queryGoodsByKeys() {
+    GoodsDao mapper = MybatisUtil.getMapper(GoodsDao.class);
+    List<Goods> goods = mapper.queryGoodsByKeys("app");
+    for (Goods good : goods) {
+        System.out.println(good.toString());
     }
 }
 ```
+
+### 差异
+
+> 上面我们使用了`${}`来获取参数，那么`${}`和`#{}`的区别是什么呢？
+
+|          | #{}                                    | ${}                       |
+| -------- | -------------------------------------- | ------------------------- |
+|          | 占位符                                 | 拼接符                    |
+| 参数处理 | 预编译处理                             | 字符串替换                |
+|          | 变量自动加单引号                       | 变量不加单引号            |
+| 执行顺序 | 先完成SQL预编译，然后将参数放入到SQL中 | 先将参数放到SQL中，在编译 |
+|          | 动态解析 -> 预编译 -> 执行             | 动态解析 -> 编译 -> 执行  |
+| 安全性   | 安全，可以预防SQL注入                  | 不安全，不能防止SQL注入   |
+
+
 
 # 事务管理
 
@@ -1218,17 +1300,110 @@ public void queryStudents() {
 
 # Druid
 
-## 架构
+> MyBatis作为一个ORM（对象关系映射，Object Relation Map）框架，再进行数据库操作时是需要和数据库进行连接的，MyBatis支持基于数据库连接池的创建方式。
+>
+> 当我们配置MyBatis数据源时，只要配置了`dateSource`标签的type属性为`POOLED`时，就可以使用MyBatis自带的数据库连接池管理连接。
+>
+> 如果我们想要使用第三方数据库连接池，则需要进行自定义配置。
+
+**常见的第三方连接池**
+
+- **DBCP**
+- **C3P0**
+- **Druid**
+- **Hikari** 
+
+| 功能            | DBCP                | Druid              | C3P0                               | Hikari                             |
+| --------------- | ------------------- | ------------------ | ---------------------------------- | ---------------------------------- |
+| 是否支持PSCache | 是                  | 是                 | 是                                 | 否                                 |
+| 监控            | jmx                 | jmx/log/http       | jmx,log                            | jmx                                |
+| 扩展性          | 弱                  | 好                 | 弱                                 | 弱                                 |
+| SQL拦截及解析   | 无                  | 支持               | 无                                 | 无                                 |
+| 代码            | 简单                | 中等               | 复杂                               | 简单                               |
+| 更新时间        | 2015.8.6            | 2015.10.10         | 2015.12.09                         | 2015.12.3                          |
+| 特点            | 依赖于common-pool   | 阿里开源，功能全面 | 历史久远，代码逻辑复杂，且不易维护 | 优化力度大，功能简单，起源于boneCP |
+| 连接池管理      | LinkedBlockingDeque | 数组               |                                    | Threadlocal + CopyOnWriteArrayList |
+
+
+
+## Druid架构
 
 ![druid-framework](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220126171209.png)
 
+## Druid依赖
 
+```xml
+<dependency>
+    <groupId>com.alibaba</groupId>
+    <artifactId>druid</artifactId>
+    <version>1.1.10</version>
+</dependency>
+```
+
+## Druid连接池工厂
+
+> 在完成这一步之前，我们先来看一下MyBatis自带的数据库连接池是如何做的。
+>
+> - 首先，`PooledDataSourceFactory`是为MyBatis的数据库连接池提供支持的。
+>
+> ```java
+> public class PooledDataSourceFactory extends UnpooledDataSourceFactory {
+>     public PooledDataSourceFactory() {
+>         //将PooledDataSource赋值给dataSource
+>         this.dataSource = new PooledDataSource();
+>     }
+> }
+> //PooledDataSource，不全
+> public class PooledDataSource implements DataSource {
+>     private final UnpooledDataSource dataSource;
+>     public PooledDataSource() {
+>         dataSource = new UnpooledDataSource();
+>     }
+>     //job here
+>     //具体实现。。
+> }
+> ```
+>
+> 所以我们需要像上面一样完成他的功能，来代替它的工作。所以我们建立`DruidDataSourceFactory`类。
+
+```java
+public class DruidDataSourceFactory extends PooledDataSourceFactory {
+    public DruidDataSourceFactory(){
+        //将DruidDataSource赋值给dataSource，至于DruidDataSource干了什么，这个需要自己去看，因为太多了
+        this.dataSource = new DruidDataSource();
+    }
+}
+```
+
+## 配置数据源为Druid
+
+```xml
+<environment id="dev">
+    <transactionManager type="JDBC">
+        <property name="closeConnection" value="false"/>
+    </transactionManager>
+    <!-- 这里我们将数据库连接池替换为DruidDataSourceFactory -->
+    <dataSource type="com.marshio.druid.druid.DruidDataSourceFactory">
+        <!-- 这里注意，使用Druid时，原driver的name变为driverClass，原url的name变为jdbcUrl-->
+        <property name="driverClass" value="${druid.driver}"/>
+        <property name="jdbcUrl" value="${druid.url}"/>
+        <property name="username" value="${druid.username}"/>
+        <property name="password" value="${druid.password}"/>
+    </dataSource>
+</environment>
+```
 
 # 日志
 
 > MyBatis做为一个封装好的ORM框架，其运行过程我们没办法跟踪，为了让开发者了解MyBatis执行流程及每个执行步骤所完成的工作，MyBatis框架本身支持log4j日志框架，对运行的过程进行跟踪记录。我们只需对MyBatis进行相关的日志配置，就可以看到MyBatis运行过程中的日志信息。
+>
+> 当然MyBatis支持多种日志，下面暂时以log4j作测试，后面用到其他的会及时补充
+>
+> 
 
 ## 添加依赖
+
+### Log4j
 
 ```xml
 <!-- log4j -->
@@ -1239,15 +1414,210 @@ public void queryStudents() {
 </dependency>
 ```
 
+> 同时需要添加日志配置文件`log4j.properties`。
 
+```properties
+# log4j.rootLogger日志输出类别和级别：只输出不低于该级别的日志信息DEBUG < INFO < WARN < ERROR < FATAL
+# WARN：日志级别     CONSOLE：输出位置自己定义的一个名字       logfile：输出位置自己定义的一个名字
+log4j.rootLogger=DEBUG,CONSOLE,logfile
 
+# 配置CONSOLE输出到控制台
+log4j.appender.CONSOLE=org.apache.log4j.ConsoleAppender
+log4j.appender.CONSOLE.Target = System.out
+log4j.appender.CONSOLE.Threshold = DEBUG
+# 配置CONSOLE设置为自定义布局模式
+log4j.appender.CONSOLE.layout=org.apache.log4j.PatternLayout
+# 配置CONSOLE日志的输出格式  [frame] 2019-08-22 22:52:12,000  %r耗费毫秒数 %p日志的优先级 %t线程名 %C所属类名通常为全类名 %L代码中的行号 %x线程相关联的NDC %m日志 %n换行
+log4j.appender.CONSOLE.layout.ConversionPattern=[frame] %d{yyyy-MM-dd HH:mm:ss,SSS} - %-4r %-5p [%t] %C:%L %x - %m%n
+log4j.appender.CONSOLE.Encoding=UTF-8
 
+################
+# 输出到日志文件中
+################
+# 配置logfile输出到文件中 文件大小到达指定尺寸的时候产生新的日志文件
+log4j.appender.logfile=org.apache.log4j.RollingFileAppender
+# 输出文件位置此为项目根目录下的logs文件夹中
+log4j.appender.logfile.File=logs/root.log
+# 后缀可以是KB,MB,GB达到该大小后创建新的日志文件
+log4j.appender.logfile.MaxFileSize=10MB
+log4j.appender.logfile.Threshold = DEBUG
+# 配置logfile为自定义布局模式
+log4j.appender.logfile.layout=org.apache.log4j.PatternLayout
+log4j.appender.logfile.layout.ConversionPattern=%d{yyyy-MM-dd HH:mm:ss} %F %p %m%n
+# 设置滚定文件的最大值3 指可以产生root.log.1、root.log.2、root.log.3和root.log四个日志文件
+log4j.appender.logfile.MaxBackupIndex=3
+# 保存编码格式
+log4j.appender.logfile.Encoding=UTF-8
+
+#日志输出级别
+log4j.logger.org.mybatis=DEBUG
+log4j.logger.java.sql=DEBUG
+log4j.logger.java.sql.Statement=DEBUG
+log4j.logger.java.sql.PreparedStatement=DEBUG
+log4j.logger.java.sql.ResultSet=DEBUG
+log4j.logger.java.Encoding=UTF-8
+```
+
+## 启用
+
+> 上面的步骤保证我们已经可以使用日志的功能了，但是此时我们是不会输出完整的日志信息的，我们需要在MyBatis的配置文件中告诉MyBatis有日志配置文件可以使用了。
+
+```xml
+<settings>
+    <setting name="logImpl" value="LOG4J"/>
+</settings>
+```
+
+## 测试
+
+```java
+/**
+     * 测试日志的功能
+     * @param args 参数
+     */
+public static void main(String[] args) {
+    SqlSession sqlSession = MybatisUtil.getSqlSession();
+    GoodsDao mapper = sqlSession.getMapper(GoodsDao.class);
+    List<Goods> goods = mapper.queryGoods();
+    logger.debug("first");
+    logger.info("search all");
+    Stream<Goods> stream = goods.stream();
+    System.out.println(stream.count());
+}
+```
+
+**输出如下**
+
+```java
+[main] DEBUG - Logging initialized using 'class org.apache.ibatis.logging.log4j.Log4jImpl' adapter.sg :Logging initialized using 'class org.apache.ibatis.logging.log4j.Log4jImpl' adapter.
+[main] DEBUG - PooledDataSource forcefully closed/removed all connections.sg :PooledDataSource forcefully closed/removed all connections.
+[main] DEBUG - PooledDataSource forcefully closed/removed all connections.sg :PooledDataSource forcefully closed/removed all connections.
+[main] DEBUG - PooledDataSource forcefully closed/removed all connections.sg :PooledDataSource forcefully closed/removed all connections.
+[main] DEBUG - PooledDataSource forcefully closed/removed all connections.sg :PooledDataSource forcefully closed/removed all connections.
+[main] DEBUG - Opening JDBC Connectionsg :Opening JDBC Connection
+[main] DEBUG - Created connection 1615056168.sg :Created connection 1615056168.
+[main] DEBUG - ==>  Preparing: select gid,good_name,good_num,good_price,good_brand,good_unit,good_shelfTime,good_desc from db_goods sg :==>  Preparing: select gid,good_name,good_num,good_price,good_brand,good_unit,good_shelfTime,good_desc from db_goods 
+[main] DEBUG - ==> Parameters: sg :==> Parameters: 
+[main] DEBUG - <==      Total: 18sg :<==      Total: 18
+[main] DEBUG - firstsg :first
+[main]  INFO - search allsg :search all
+18
+```
 
 # 缓存
 
+> MyBatis是基于JDBC的封装，使数据库操作更加便捷，除此之外，还对其性能进行了优化。
+>
+> - 引入了缓存机制，提升检索效率
+> - 引入延迟加载机制，减少对数据库不必要的访问
+
+## 工作原理
+
+> 缓存就是将读取到的数据放到内存中，因为内存读取速度比磁盘读取速度快。
+>
+> 如下图
+>
+> ![Redis](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220207160809.png)
+
+## MyBatis的缓存
+
+> MyBatis的缓存分为一级缓存和二级缓存。两者的区别就像局部变量和全局变量。
+
+### 一级缓存
+
+> 默认情况下是开启的。
+>
+> 一级缓存的缓存是对同一个SqlSession开放的，即如果我们使用同一个SqlSession对象多次调用同一个方法，往往只会执行一次SQL语句，因为在第一次查询后，MyBatis会将其放在缓存中，以后再查询时，如果没有明确的声明当前读，且缓存未超时的情况下，就会取出缓存中的数据。
+
+#### 生命周期
+
+> 缓存并不是一直都存在的，而是有时间限制的。那么，一级缓存的生命周期有多长呢？
+
+- 一个`SQLSession`会话的创建，`SqlSession`对象中有一个`Executor`对象，`Executor`对象中有一个`PerpetualCache`对象（即一级缓存），会话结束的时候会释放以上所有对象。
+
+```java
+//SQLSession对象的创建
+public DefaultSqlSession(Configuration configuration, Executor executor, boolean autoCommit) {
+    this.configuration = configuration;
+    this.executor = executor;
+    this.dirty = false;
+    this.autoCommit = autoCommit;
+}
+//Executor对象的创建
+protected BaseExecutor(Configuration configuration, Transaction transaction) {
+    this.transaction = transaction;
+    this.deferredLoads = new ConcurrentLinkedQueue<DeferredLoad>();
+    //localCache即本地缓存，即一级缓存
+    this.localCache = new PerpetualCache("LocalCache");
+    this.localOutputParameterCache = new PerpetualCache("LocalOutputParameterCache");
+    this.closed = false;
+    this.configuration = configuration;
+    this.wrapper = this;
+}
+```
+
+- 执行SqlSession的`close()`方法，和上面不一样的是这个是主动关闭会话。
+- 执行SqlSession的`clearCache()`方法，会清空缓存，但是一级缓存还能用。
+- SqlSession执行了以下操作之一，都会清空`PerpetualCache`对象的数据。
+    - update()
+    - delete()
+    - insert()
 
 
 
+#### 查询一致性
+
+> 一级缓存是有了，那么如何保证两次查询是一致的查询？
+>
+> 在MyBatis中，如果以下条件一致，那么就认为他们是相同的查询。
+>
+> - 传入的`statementId`
+> - 查询时要求的结果集中的结果范围
+> - 查询产生的最终`Sql`语句一致
+> - 传递给Statement要设置的参数值
+
+### 二级缓存
+
+> 默认情况不开启。
+>
+> 二级缓存是全局缓存，是相对整个应用而言的缓存，建立在`mapper`上，。可以提高数据库查询的效率，以提高应用的性能。
+>
+> 想要开启二级缓存，需要一定的配置即数据处理，MyBatis要求返回的POJO必须是可序列化的，那么就需要POJO实现Serializable接口，需要在`mybatis-config.xml`文件开启`<cache/>`标签。
+>
+> ![img](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220207170251.png)
+>
+> 图源：https://www.cnblogs.com/happyflyingpig/p/7739749.html
+
+#### 生命周期
+
+> 同一级缓存一样，二级缓存也是有生命周期的。
+
+- 映射文件中的所有`select`语句的结果都会被放到二级缓存中
+- 映射文件中的所有`insert`、`update`、`delete`语句都会刷新二级缓存
+- 默认使用LRU（最近最少使用回收算法）回收缓存
+- 缓存不会对任何类型的基于时间的调度进行刷新（既没有刷新时间间隔）
+- 二级缓存会存储列表或对象的1024个引用（不论查询结果返回什么）
+- 二级缓存会被视为读写缓存，这意味着检索到的对象不是共享的，可以被调用者安全的修改，而不会干扰其他调用方或线程的其他潜在修改。
+
+**注意：**缓存将只应用于有`cache`标签声明的映射文件，如果将映射文件与`Java API`共同使用，那么默认情况下被`cache`标签声明过的语句不会被缓存，需要使用注解`@CacheNamespaceRef`来表明需要被缓存的地方。
+
+举个:chestnut:
+
+```xml
+<!--二级缓存的参数-->
+<cache eviction="" flushInterval="" size="" readOnly="true" blocking="" type=""/>
+```
+
+#### 参数
+
+##### eviction
+
+> 缓存回收算法，默认为LRU（最近最少使用算法）。
+
+- **LRU**：最近最少使用的缓存会被回收
+- **FIFO**：先进先出回收算法，先缓存的先被回收
+- **SOFT**：
+- **WEAK**：
 
 # 延时加载
 

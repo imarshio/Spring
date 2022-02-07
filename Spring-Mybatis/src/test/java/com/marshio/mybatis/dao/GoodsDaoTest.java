@@ -6,7 +6,7 @@ import com.marshio.mybatis.utils.MybatisUtil;
 import org.junit.Test;
 
 import java.sql.Timestamp;
-import java.util.Date;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * @author masuo
  * @data 27/1/2022 下午2:22
- * @Description TODO
+ * @Description 测试
  */
 public class GoodsDaoTest {
 
@@ -27,7 +27,7 @@ public class GoodsDaoTest {
         //mapper.addGoods(new Goods(0,"HP 2022",10,12000,"HP","台",new Timestamp(System.currentTimeMillis()),"这是惠普的暗影精灵！很贵的。"));
         //mapper.addGoods(new Goods(0,"DELL 2020",10,4499,"DELL","台",new Timestamp(System.currentTimeMillis()),"这是戴尔的灵越！很好看的，很轻。"));
         //mapper.addGoods(new Goods(0,"DELL 2021",10,30000,"DELL","台",new Timestamp(System.currentTimeMillis()),"这是戴尔的外星人！很贵的。"));
-        //mapper.addGoods(new Goods(0,"DELL 2022",10,7999,"DELL","台",new Timestamp(System.currentTimeMillis()),"这是戴尔的XPS！很贵的。"));
+        mapper.addGoods(new Goods(0,"DELL 2022",10,7999,"DELL","台",new Timestamp(System.currentTimeMillis()),"这是戴尔的XPS！很贵的。"));
     }
 
     @Test
@@ -64,6 +64,27 @@ public class GoodsDaoTest {
         List<Goods> goods = mapper.queryGoodsWithParams(condition);
         for (Goods good : goods) {
             System.out.println(good);
+        }
+    }
+
+    @Test
+    public void queryGoodsWithForEach() {
+        GoodsDao mapper = MybatisUtil.getMapper(GoodsDao.class);
+        List<String> brand = new ArrayList<>();
+        brand.add("apple");
+        brand.add("HP");
+        List<Goods> goods = mapper.queryGoodsWithForEach(brand);
+        for (Goods good : goods) {
+            System.out.println(good.toString());
+        }
+    }
+
+    @Test
+    public void queryGoodsByKeys() {
+        GoodsDao mapper = MybatisUtil.getMapper(GoodsDao.class);
+        List<Goods> goods = mapper.queryGoodsByKeys("app");
+        for (Goods good : goods) {
+            System.out.println(good.toString());
         }
     }
 
