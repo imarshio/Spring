@@ -6,7 +6,7 @@ import java.util.List;
 /**
  * @author masuo
  * @data 21/1/2022 下午3:43
- * @Description TODO
+ * @Description 实体类
  */
 
 public class Student {

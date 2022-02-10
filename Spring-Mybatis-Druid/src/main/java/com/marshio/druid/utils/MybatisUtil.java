@@ -27,6 +27,10 @@ public class MybatisUtil {
         }
     }
 
+    public static SqlSessionFactory getFactory() {
+        return factory;
+    }
+
     /**
      * @param autoCommit 是否自动提交
      * @return SqlSession

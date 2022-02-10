@@ -7,12 +7,13 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="Spring-Aop" />
-        <module name="Spring-MVC" />
         <module name="Spring-Mybatis-Druid" />
         <module name="Spring-Mybatis" />
         <module name="Spring-IoC" />
       </profile>
     </annotationProcessing>
-    <bytecodeTargetLevel target="8" />
+    <bytecodeTargetLevel target="8">
+      <module name="Spring-MVC" target="1.8" />
+    </bytecodeTargetLevel>
   </component>
 </project>

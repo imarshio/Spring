@@ -6,7 +6,7 @@ import com.marshio.ioc.pojo.Student;
 /**
  * @author masuo
  * @data 21/1/2022 下午4:18
- * @Description TODO
+ * @Description 接口实现
  */
 
 public class StudentDaoImpl implements StudentIocDao {

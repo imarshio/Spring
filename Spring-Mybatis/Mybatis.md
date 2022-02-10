@@ -211,10 +211,6 @@ mysql.password=root
 </configuration>
 ```
 
-
-
-
-
 # CRUD
 
 > 需要在建立完实体后，创建接口类，然后再创建映射文件实现接口功能。
@@ -294,14 +290,11 @@ public interface StudentDao {
 ### insert
 
 > - `id`：绑定对应DAO接口中的方法
->
-> - `parameterType`：用以指定接口中对应方法的参数类型（可省略）
->
+>- `parameterType`：用以指定接口中对应方法的参数类型（可省略）
 > - `useGeneratedKeys`：设置添加操作是否需要回填生成的主键
->
-> - `keyProperty`：指定回填的id设置到参数对象中的哪个属性
->
+>- `keyProperty`：指定回填的id设置到参数对象中的哪个属性
 > - `timeout`：设置此操作的超时时间，如果不设置则一直等待
+>- `flushCache`：为true时会导致**增删改的SQL**语句被调用时刷新一级缓存和二级缓存，默认为true（增删改）
 
 ```xml
 <!-- 插入无需设置返回类型 -->
@@ -1588,9 +1581,68 @@ protected BaseExecutor(Configuration configuration, Transaction transaction) {
 >
 > 图源：https://www.cnblogs.com/happyflyingpig/p/7739749.html
 
-#### 生命周期
+#### 开启二级缓存
 
-> 同一级缓存一样，二级缓存也是有生命周期的。
+> 想要开启二级缓存，需要先开启**全局缓存**，在启用**映射文件的全局缓存**。
+>
+> 当然，全局缓存默认是开启的，所以其实也无需设置。
+
+- `mybatis-config.xml`
+
+```xml
+<settings>
+    <!--设置全局缓存的开启或关闭-->
+    <setting name="cacheEnabled" value="true"/>
+</settings>
+```
+
+- `***Mapper.xml`
+
+```xml
+<!--二级缓存的参数-->
+<cache eviction="" flushInterval="" size="" readOnly="" blocking="" type=""/>
+```
+
+> 映射文件中的缓存标签有`eviction`、`flushInterval`、`size`、`readOnly`、`blocking`、`type`六个参数需要设置。比较常用的参数设置如下。
+
+##### eviction
+
+> 缓存回收策略，默认为LRU（最近最少使用算法）。可用回收算法如下
+
+- **LRU**：最近最少使用的缓存会被回收，默认算法。
+- **FIFO**：先进先出回收算法，先缓存的先被回收。
+- **SOFT**：软引用回收策略，基于**垃圾回收器状态**和**软引用规则**回收对象。
+- **WEAK**：弱引用回收策略，基于**垃圾回收器状态**和**弱引用规则**回收对象。
+
+##### flushInterval
+
+> 刷新时间间隔，默认不设值，此时只有调用方主动调用刷新才会刷新。
+>
+> 单位是毫秒。
+
+##### size
+
+> 缓存大小，默认是1024.
+
+##### readOnly
+
+> 缓存只读，默认是false。
+>
+> 为true时，是只读缓存，会向所有调用方返回相同的实例，且缓存不能被修改，这样提升了性能。
+>
+> 为false时，是读写缓存，此时返回的是缓存对象的副本（通过序列化），这样慢一些，但是更安全。
+
+##### type
+
+> 使用自定义的缓存类型或第三方缓存类型，如`Ehcache`、`redis`、`OScache`。
+>
+> 详情查看 [EhCache](# EhCache) 、
+
+**注意**：二级缓存是事务性的，这意味着当`SqlSession`以`commit`结束或以`rollback`结束但是没有使用`flushCache = true`执行`insert`、`update`、`delete`时，它将被更新。
+
+#### 特性
+
+> 同一级缓存一样，二级缓存也是有生命周期的，还有一些其他属性。
 
 - 映射文件中的所有`select`语句的结果都会被放到二级缓存中
 - 映射文件中的所有`insert`、`update`、`delete`语句都会刷新二级缓存
@@ -1601,23 +1653,88 @@ protected BaseExecutor(Configuration configuration, Transaction transaction) {
 
 **注意：**缓存将只应用于有`cache`标签声明的映射文件，如果将映射文件与`Java API`共同使用，那么默认情况下被`cache`标签声明过的语句不会被缓存，需要使用注解`@CacheNamespaceRef`来表明需要被缓存的地方。
 
-举个:chestnut:
+#### 异同
+
+|      | 一级缓存  | 二级缓存            |
+| ---- | --------- | ------------------- |
+| 层   | Session级 | SqlSessionFactory级 |
+| 默认 | 开启      | 关闭                |
+|      |           |                     |
+
+
+
+### EhCache
+
+> 上面提到，MyBatis支持第三方缓存，这样增加了MyBatis的扩展性，也能提升应用的性能。
+>
+>  EhCache 是一个纯Java的进程内缓存框架，具有快速、精干等特点.
+
+#### 依赖
 
 ```xml
-<!--二级缓存的参数-->
-<cache eviction="" flushInterval="" size="" readOnly="true" blocking="" type=""/>
+<!-- ehcache-core -->
+<dependency>
+    <groupId>net.sf.ehcache</groupId>
+    <artifactId>ehcache-core</artifactId>
+    <version>2.6.11</version>
+</dependency>
+
+<!-- mybatis-ehcache -->
+<dependency>
+    <groupId>org.mybatis.caches</groupId>
+    <artifactId>mybatis-ehcache</artifactId>
+    <version>1.1.0</version>
+</dependency>
 ```
 
-#### 参数
+#### 配置
 
-##### eviction
+```xml
+<ehcache>
+    <!--表示硬盘上保存缓存的位置。默认是临时文件夹。-->
+    <diskStore path="cache"/>
+    <!--默认缓存配置，如果类没有做特定的设置，则使用这里配置的缓存属性。
+       maxInMemory  - 设置缓存中允许保存的最大对象（pojo）数量
+       eternal -设置对象是否永久保存，如果为true，则缓存中的数据永远不销毁，一直保存。
+       timeToIdleSeconds - 设置空闲销毁时间。只有eternal为false时才起作用。表示从现在到上次访问时间如果超过这个值，则缓存数据销毁
+       timeToLiveSeconds-设置活动销毁时间。表示从现在到缓存创建时间如果超过这个值，则缓存自动销毁
+       overflowToDisk - 设置是否在超过保存数量时，将超出的部分保存到硬盘上。-->
+    <defaultCache
+            maxElementsInMemory="1500"
+            eternal="false"
+            timeToIdleSeconds="120"
+            timeToLiveSeconds="300"
+            overflowToDisk="true"/>
+    <!-- 也可以通过name设置针对某个类的缓存配置-->
+    <cache name="cn.sz.po.Emp"
+           maxElementsInMemory="1000"
+           eternal="true"
+           timeToIdleSeconds="0"
+           timeToLiveSeconds="0"
+           overflowToDisk="false"/>
+</ehcache>
+<!--
+属性说明：
+l diskStore：指定数据在磁盘中的存储位置。
+l defaultCache：当借助CacheManager.add("demoCache")创建Cache时，EhCache便会采用<defalutCache/>指定的的管理策略
 
-> 缓存回收算法，默认为LRU（最近最少使用算法）。
+以下属性是必须的：
+l maxElementsInMemory - 在内存中缓存的element的最大数目
+l maxElementsOnDisk - 在磁盘上缓存的element的最大数目，若是0表示无穷大
+l eternal - 设定缓存的elements是否永远不过期。如果为true，则缓存的数据始终有效，如果为false那么还要根据timeToIdleSeconds，timeToLiveSeconds判断
+l overflowToDisk - 设定当内存缓存溢出的时候是否将过期的element缓存到磁盘上
 
-- **LRU**：最近最少使用的缓存会被回收
-- **FIFO**：先进先出回收算法，先缓存的先被回收
-- **SOFT**：
-- **WEAK**：
+以下属性是可选的：
+l timeToIdleSeconds - 当缓存在EhCache中的数据前后两次访问的时间超过timeToIdleSeconds的属性取值时，这些数据便会删除，默认值是0,也就是可闲置时间无穷大
+l timeToLiveSeconds - 缓存element的有效生命期，默认是0.,也就是element存活时间无穷大
+ diskSpoolBufferSizeMB 这个参数设置DiskStore(磁盘缓存)的缓存区大小.默认是30MB.每个Cache都应该有自己的一个缓冲区.
+l diskPersistent - 在VM重启的时候是否启用磁盘保存EhCache中的数据，默认是false。
+l diskExpiryThreadIntervalSeconds - 磁盘缓存的清理线程运行间隔，默认是120秒。每个120s，相应的线程会进行一次EhCache中数据的清理工作
+l memoryStoreEvictionPolicy - 当内存缓存达到最大，有新的element加入的时候， 移除缓存中element的策略。默认是LRU（最近最少使用），可选的有LFU（最不常使用）和FIFO（先进先出）
+ -->
+```
+
+
 
 # 延时加载
 

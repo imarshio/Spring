@@ -113,6 +113,98 @@
 
 1. 拉取远程仓库
 
+
+
+## 分支相关
+
+### 创建分支
+
+```bash
+git branch <branchName>
+```
+
+
+
+### 切换分支
+
+```bash
+# 注意，此处branchName是本地分支名称
+git checkout <branchName>
+```
+
+
+
+### 查看分支
+
+```bash
+# 查看本地分支,带*号说明是当前分支
+git branch
+
+# 查看本地+远程分支
+git branch -a 
+```
+
+![image-20220210082728848](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220210082728.png)
+
+### 重命名
+
+```bash
+git branch -m <oldBranchName> <newBranchName>
+```
+
+![image-20220210082706854](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220210082715.png)
+
+### 同步远程仓库分支
+
+> 在有些情况下，与远程仓库绑定之后，看不到远程分支，原因目前还不知道是为啥。
+>
+> 这时候，我们就需要使用命令同步远程分支
+
+```bash
+git fetch
+```
+
+![image-20220210082759583](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220210082759.png)
+
+### 合并分支
+
+> 分支合并是我们经常使用的，也是很容易出问题的。
+>
+> 以下场景为我们新建了一个dev的分支，开发完之后，将其合并到main分支。
+
+```bash
+# 新建dev分支
+git branch dev
+
+# 拉取main分支的代码
+git pull origin main
+
+# 开发。。。
+
+# 将dev分支合并到main分支
+
+# 首先需要切换到main分支
+git checkout main
+
+# 合并dev
+git merge dev
+
+# 查看状态
+git 
+```
+
+### 删除分支
+
+```bash
+# 删除本地分支
+git branch -d <branchName>
+
+# 删除远程分支
+git branch -r -d origin/
+```
+
+
+
 # target
 
 ```markdown

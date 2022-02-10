@@ -6,17 +6,18 @@
     <properties resource="datasource/druid.properties"/>
 
     <settings>
-        <!--一级缓存默认开启，无需设置-->
+        <!--设置全局缓存的开启或关闭-->
+        <setting name="cacheEnabled" value="true"/>
         <setting name="logImpl" value="LOG4J"/>
 
     </settings>
 
 
     <typeAliases>
-        <typeAlias type="com.marshio.druid.pojo.Goods" alias="goods"/>
+        <typeAlias type="com.marshio.druid.pojo.Goods" alias="Goods"/>
     </typeAliases>
 
-    <environments default="dev">
+    <environments default="druid">
 
         <environment id="druid">
             <transactionManager type="JDBC">

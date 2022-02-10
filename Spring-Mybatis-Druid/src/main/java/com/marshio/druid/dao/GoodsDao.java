@@ -20,6 +20,8 @@ public interface GoodsDao {
 
     int delGoodsById(int gid);
 
+    Goods queryGoodsById(int gid);
+
     List<Goods> queryGoods();
 
     List<Goods> queryGoodsWithMap(HashMap<String, Object> params);

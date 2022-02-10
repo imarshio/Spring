@@ -4,9 +4,9 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.marshio.druid.dao.GoodsDao">
 
-    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" blocking="" type=""/>
+    <cache eviction="FIFO" flushInterval="60000" size="512" readOnly="true" type="org.mybatis.caches.ehcache.EhcacheCache"/>
 
-    <resultMap id="goods" type="goods">
+    <resultMap id="goods" type="Goods">
         <id column="gid" property="gid"/>
         <result column="good_name" property="goodName"/>
         <result column="good_num" property="goodNum"/>
@@ -17,7 +17,7 @@
         <result column="good_desc" property="goodDesc"/>
     </resultMap>
 
-    <insert id="addGoods">
+    <insert id="addGoods" flushCache="true">
         insert into db_goods (gid, good_name, good_num, good_price, good_brand, good_unit, good_shelfTime, good_desc)
         VALUES (0, #{goodName}, #{goodNum}, #{goodPrice}, #{goodBrand}, #{goodUnit}, #{goodShelfTime}, #{goodDesc})
     </insert>
@@ -32,7 +32,13 @@
         gid,good_name,good_num,good_price,good_brand,good_unit,good_shelfTime,good_desc
     </sql>
 
-    <select id="queryGoods" resultMap="goods" resultType="list">
+    <select id="queryGoodsById" resultMap="goods" >
+        select
+        <include refid="params"/>
+        from db_goods where gid = #{gid}
+    </select>
+
+    <select id="queryGoods" resultMap="goods" resultType="list" useCache="true">
         select
         <include refid="params"/>
         from db_goods

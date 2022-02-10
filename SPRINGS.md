@@ -969,11 +969,563 @@ public class AnnotationDemo {
 }
 ```
 
+
+
 ## Spring MVC
 
+### MVC模式
+
 > Spring MVC是一个基于Spring的实现了MVC设计模式轻量级Web框架，实现了Model，View，Controller分离，将web层进行解耦，把复杂的web应用分成逻辑清晰的几部分，简化开发，减少出错，方便组内开发人员之间的配合。
+>
+> 在 Web 项目的开发中，能够及时、正确地响应用户的请求是非常重要的。用户在网页上单击一个 URL 路径，这对 Web 服务器来说，相当于用户发送了一个请求。而获取请求后如何**解析**用户的输入，并**执行相关处理逻辑**，最终**跳转**至正确的页面**显示反馈结果**，这些工作往往是控制层（Controller）来完成的。
+>
+> 在请求的过程中，用户的信息被封装在 User 实体类中，该**实体类**在 Web 项目中属于数据模型层（Model）。
+>
+> 在请求显示阶段，跳转的结果**网页**就属于视图层（View）。
+>
+> 像这样，控制层负责前台与后台的交互，数据模型层封装用户的输入输出数据，视图层选择恰当的视图来显示最终的执行结果，这样层次分明的软件开发和处理流程被称为MVC模式。
 
 ![image-20220125102832124](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220125102833.png)
+
+
+
+**总结**：
+
+- 视图层（View）：负责格式化数据并把它们呈现给用户，包括数据展示、用户交互、数据验证、界面设计等功能。
+- 控制层（Controller）：负责接收并转发请求，对请求进行处理后，指定视图并将响应结果发送给客户端。
+- 数据模型层（Model）：模型对象拥有最多的处理任务，是应用程序的主体部分，它负责数据逻辑（业务规则）的处理和实现数据操作（即在数据库中存取数据）。
+
+> SUN公司在推出JSP技术的同时，也推出了两种web应用程序的开发模式。
+>
+> - **JSP+JavaBean**
+> - **JSP+Servlet+JavaBean**
+
+**JSP+JavaBean**
+
+> 在此开发模式中，JSP处理用户请求，JavaBean封装和处理用户数据。该模式只有Model和View层，一般View层会处理控制层的工作。由于其处理模式导致其耦合度较高，只适合处理小型简单逻辑网站。
+>
+> 图源：http://c.biancheng.net/spring_mvc/mvc.html
+
+![JSP+JavaBean](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220208113434.png)
+
+通过上图可以发现 JSP 从 `HTTP Request`（请求）中获得所需的数据，并进行业务逻辑的处理，然后将结果通过 `HTTP Response`（响应）返回给浏览器。从中可见，JSP+JavaBean 模式在一定程度上实现了 MVC，即 JSP 将控制层和视图合二为一，JavaBean 为模型层。
+
+JSP+JavaBean 模式中 JSP 身兼数职，既要负责视图层的数据显示，又要负责业务流程的控制，结构较为混乱，并且也不是我们所希望的松耦合架构模式，所以当业务流程复杂的时候并不推荐使用。
+
+**JSP+Servlet+JavaBean**
+
+> 结构清晰，系统松耦合，但是结构复杂，不适合中小型网站设计。
+
+![Servlet+JSP+JavaBean](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220208113638.png)
+
+相比 JSP+JavaBean 模式来说，Servlet+JSP+JavaBean 模式将控制层单独划分出来负责业务流程的控制，接收请求，创建所需的 JavaBean 实例，并将处理后的数据返回视图层（JSP）进行界面数据展示。
+
+Servlet+JSP+JavaBean 模式的结构清晰，是一个松耦合架构模式，一般情况下，建议使用该模式。
+
+#### 优缺点
+
+**优点**
+
+- 多视图共享一个模型，大大提高代码的复用
+- 松耦合
+- 控制器提高了应用程序的灵活性和可配置性
+- 有利于软件工程化管理
+
+**缺点**
+
+- 逻辑复杂
+- 系统结构复杂，实现难度增加
+- 视图对模型数据访问效率低，因为需要经过controller层
+
+### Spring MVC
+
+> Spring MVC 是 Spring 提供的一个基于 MVC 设计模式的轻量级 Web 开发框架，本质上相当于 Servlet。
+>
+> Spring MVC 是结构最清晰的 Servlet+JSP+JavaBean 的实现，是一个典型的教科书式的 MVC 构架，不像 Struts 等其它框架都是变种或者不是完全基于 MVC 系统的框架。
+>
+> Spring MVC 角色划分清晰，分工明细，并且和 Spring 框架无缝结合。Spring MVC 是当今业界最主流的 Web 开发框架，以及最热门的开发技能。
+>
+> 在 Spring MVC 框架中，Controller 替换 Servlet 来担负控制器的职责，用于接收请求，调用相应的 Model 进行处理，处理器完成业务处理后返回处理结果。Controller 调用相应的 View 并对处理结果进行视图渲染，最终客户端得到响应信息。
+>
+> Spring MVC 框架采用松耦合可插拔的组件结构，具有高度可配置性，比起其它 MVC 框架更具有扩展性和灵活性。
+>
+> 此外，Spring MVC 的注解驱动和对 REST 风格的支持，也是它最具特色的功能。无论是在框架设计，还是扩展性、灵活性等方面都全面超越了 Struts2 等 MVC 框架。并且由于 Spring MVC 本身就是 Spring 框架的一部分，所以可以说与 Spring 框架是无缝集成，性能方面具有先天的优越性，对于开发者来说，开发效率也高于其它的 Web 框架，在企业中的应用越来越广泛，成为主流的 MVC 框架。
+
+#### 优点
+
+- 清晰地角色划分，Spring MVC 在 Model、View 和 Controller 方面提供了一个非常清晰的角色划分，这 3 个方面真正是各司其职，各负其责。
+- 灵活的配置功能，可以把类当作 Bean 通过 XML 进行配置。
+- 提供了大量的控制器接口和实现类，开发者可以使用 Spring 提供的控制器实现类，也可以自己实现控制器接口。
+- 真正做到与 View 层的实现无关。它不会强制开发者使用 JSP，可以根据项目需求使用 Velocity、FreeMarker 等技术。
+- 国际化支持
+- 面向接口编程
+- 与 Spring 框架无缝集成
+
+### 搭建
+
+#### 依赖
+
+```xml
+<!-- 设置打包方式为war包 -->
+<packaging>war</packaging>
+
+<dependencies>
+    <!-- spring-webmvc包含spring基础组件以及spring-web组件,此即MVC的Model层 -->
+    <dependency>
+        <groupId>org.springframework</groupId>
+        <artifactId>spring-webmvc</artifactId>
+        <version>5.2.9.RELEASE</version>
+    </dependency>
+
+    <!-- servlet-api，即MVC的Controller层 -->
+    <dependency>
+        <groupId>javax.servlet</groupId>
+        <artifactId>javax.servlet-api</artifactId>
+        <version>4.0.1</version>
+    </dependency>
+
+    <!-- thymeleaf,即MVC的View层 -->
+    <dependency>
+        <groupId>org.thymeleaf</groupId>
+        <artifactId>thymeleaf-spring5</artifactId>
+        <version>3.0.11.RELEASE</version>
+    </dependency>
+</dependencies>
+```
+
+#### 配置
+
+> 在SpringMVC项目中，需要配置前端控制器，还需要配置SpringMVC配置文件。
+>
+> - web.xml，前端控制器，过滤等
+> - SpringMVC配置文件，相当于Spring中的`applicatContext.xml`配置文件
+
+##### 前端控制器
+
+> Spring MVC 是基于`Servlet`的，`DispatcherServlet`是整个SpringMVC框架的核心，因为几乎所有的请求都需要经过它分配给相应的`Controller`，所以配置SpringMVC首先需要配置`DispatcherServlet`。
+
+##### MVC配置文件
+
+> 此时，Spring不只是需要解析控制层和模型层文件，还需要解析视图层文件，我们需要告诉Spring如何解析视图层文件。
+
+- **默认配置方式**
+
+> Spring MVC 初始化时将在应用程序的 WEB-INF 目录下查找配置文件，该配置文件的命名规则是`${servletName}-servlet.xml`，例如下面的`servlet-name`标签的值是`springmvc`，那么配置文件的名称就是`springmvc-servlet.xml`。
+
+`web.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <!-- 部署DispatcherServlet -->
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <!-- SpringMVC提供了一个DispatcherServlet的类（SpringMVC前端控制器），
+			 用于拦截用户请求，并将请求交给SpringMVC处理 -->
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+        <!-- 由于这是静态资源，所以在启动时不会加载，这就导致第一次访问服务器时会很慢，为了解决这个问			  题，就需要使用下面的标签设置为1，表示在启动容器时也一同启动 -->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <!-- 表示拦截所有请求，除.jsp请求，因为.jsp相当于一个servlet，而在SpringMVC中，servlet需要经过特殊的处理       -->
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+
+</web-app>
+```
+
+`springmvc-servlet.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+    
+    <!-- 扫描控制器，其实应该扫描全包，目前实验只扫描控制器包 -->
+    <context:component-scan base-package="com.marshio.mvc.controller"/>
+    
+    <!-- 配置视图解析器 -->
+    <bean id="viewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <!-- order数字越大，优先级越高 -->
+        <property name="order" value="1"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+                        <!-- 视图前缀 -->
+                        <property name="prefix" value="/templates/"/>
+                        <!-- 视图后缀 -->
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML5"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+   
+</beans>
+```
+
+- **常用注解配置方式**
+
+> 由于在Spring中，我们将所有的配置资源文件都放在resource下面了，所以上面的默认配置不符合我们的需求，而为了迎合这一需求，我们在配置`***-servlet.xml`时，可以根据`<init-param>`标签指定配置文件的位置。
+
+`web.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_4_0.xsd"
+         version="4.0">
+
+    <servlet>
+        <servlet-name>springmvc</servlet-name>
+        <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
+
+        <!-- 指定Springmvc-servlet.xml的位置 -->
+        <init-param>
+            <param-name>contextConfigLocation</param-name>
+            <!-- 这个名字可以自己命名，不在遵循默认规则 -->
+            <param-value>classpath:springmvc-servlet.xml</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>springmvc</servlet-name>
+        <url-pattern>/</url-pattern>
+    </servlet-mapping>
+</web-app>
+```
+
+`springmvc-servlet.xml`
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd">
+
+    <!-- 扫描控制器，其实应该扫描全包，目前实验只扫描控制器包 -->
+    <context:component-scan base-package="com.marshio.mvc.controller"/>
+    
+    <!-- 配置视图解析器 -->
+    <bean id="viewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <!-- order数字越大，优先级越高 -->
+        <property name="order" value="1"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+                        <!-- 视图前缀 -->
+                        <property name="prefix" value="/templates/"/>
+                        <!-- 视图后缀 -->
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML5"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
+```
+
+- **常用XML配置方式**
+
+> XML较复杂，
+
+### 使用
+
+> 同其他Spring项目，SpringMVC提供了注解和配置XML文件两种方式。
+
+举个:chestnut:
+
+#### 注解版
+
+>  注解版需要在SpringMVC配置文件中声明需要被扫描的包。
+>
+> 还需要说明视图解析方式。
+
+**项目结构**
+
+![image-20220209110829308](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220209110829.png)
+
+**SpringMVC配置文件**
+
+```xml
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/context
+        https://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 扫描 -->
+    <context:component-scan base-package="com.marshio.mvc.controller"/>
+
+    <!-- 配置视图解析器 -->
+    <bean id="viewResolver" class="org.thymeleaf.spring5.view.ThymeleafViewResolver">
+        <property name="order" value="1"/>
+        <property name="characterEncoding" value="UTF-8"/>
+        <property name="templateEngine">
+            <bean class="org.thymeleaf.spring5.SpringTemplateEngine">
+                <property name="templateResolver">
+                    <bean class="org.thymeleaf.spring5.templateresolver.SpringResourceTemplateResolver">
+                        <!-- 视图前缀 -->
+                        <property name="prefix" value="/templates/"/>
+                        <!-- 视图后缀 -->
+                        <property name="suffix" value=".html"/>
+                        <property name="templateMode" value="HTML5"/>
+                        <property name="characterEncoding" value="UTF-8"/>
+                    </bean>
+                </property>
+            </bean>
+        </property>
+    </bean>
+
+</beans>
+```
+
+> 注解版最常用，也最简单，无需写大量的复杂的xml文件，只需一个***Controller.class就能解决问题。
+>
+> **注意**
+>
+> - 需要使用`@Controller`注解表明这是一个控制器类
+> - 需要使用`@RequestMapping`注解表明请求路径
+> - 方法上需要使用`@RequestMapping(“url”)`声明当前方法请求的url
+
+```java
+//声明为控制器类
+@Controller
+public class LoginController {
+    /**
+     * 访问 /  ==》 就是访问  /templates/ + index + .html，即/templates/index.html
+     * @return index.html
+     */
+    @RequestMapping(value = "/")
+    public String login(){
+        return "index";
+    }
+}
+```
+
+**配置Tomcat服务器**
+
+![image-20220209110538375](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220209110538.png)
+
+![image-20220209110701417](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220209110701.png)
+
+**启动Tomcat**
+
+![image-20220209110740815](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220209110740.png)
+
+### 执行流程
+
+#### SpringMVC组件
+
+> - **DispatcherServlet**：前端控制器，拦截所有的请求并处理请求，相当于中央处理器，进行统一调度。
+> - **HandlerMapping**：处理器映射，在我的理解中就是，你写的@RequestMapping注解，会被整合成一张地图（map），前端的请求被DispatcherServlet拦截后，DispatcherServlet会拿着你的请求路径来这里问该去找哪个处理器，HandlerMapping会告诉他一个处理器信息。
+> - **HandlerAdapter**：这个就是你找到处理器之后，怕你不适配处理器，就类似，你是iso的充电口，而人家只提供typec的口，就是为了能让你用上这个处理器
+> - **Handler**：类似servlet
+> - **ViewResolver**：视图解析器
+
+![Spring MVC执行流程](https://masuo-github-image.oss-cn-beijing.aliyuncs.com/image/20220209112548.png)
+
+> 执行流程如下
+>
+> 1. 用户发起请求，请求被服务端的`DispatcherServlet`拦截。
+> 2. DispatcherServlet会去查找HandlerMapping，并会返回一个HandlerExecutionChain（执行链）。
+> 3. DispatcherServlet会将HandlerExecutionChain中的Handler信息发送给HandlerAdapter。
+> 4. HandlerAdapter会根据Handler信息找到并执行相应的Handler（又称Controller）
+> 5. Handler执行完毕会返回给HandlerAdapter一个ModelAndView对象，此对象包括Model 数据模型以及View 视图信息，此时视图还没有被渲染。
+> 6. HandlerAdapter接收到ModelAndView后会将其返回给DispatcherServlet。
+> 7. DispatcherServlet接收到后会请求ViewResolver解析视图信息。
+> 8. ViewResolver根据View信息匹配到相应的视图信息，并返回给DispatcherServlet。
+> 9. DispatcherServlet接收到具体的View视图后，进行视图渲染，将Model中的模型数据填充到View视图中的request域生成最终的View。
+> 10. 视图负责将结果显示到浏览器。
+
+### 常用注解
+
+#### Controller
+
+> 声明该类是一个控制器类。
+>
+> SpringMVC使用扫描机制找到应用中所有基于注解的控制器类，所以，为了能让控制器类被SpringMVC扫描到，需要在配置文件中声明spring-context，并使用<context:component-scan/>标签指定扫描范围，需要将所有的控制器类放在该包下。
+
+举个:chestnut:
+
+```java
+package com.marshio.mvc.controller;
+
+import org.springframework.stereotype.Controller;
+
+/**
+ * @author masuo
+ * @data 9/2/2022 上午9:40
+ * @Description 登陆控制器
+ * 想要将这个控制器交给Spring有两种方式
+ * 1.注解+扫描,想要此控制器被扫描到，还需要配置
+ * 2.配置bean
+ */
+
+@Controller
+public class LoginController {
+
+    public String login(){
+        return "index";
+    }
+
+}
+```
+
+```xml
+<!-- 扫描 -->
+<context:component-scan base-package="com.marshio.mvc.controller"/>
+```
+
+#### RequestMapping
+
+> 一个控制器内有多个处理请求的方法，每个方法负责不同的请求操作，RequsetMapping就负责将请求映射到对应的方法上。
+>
+> 此注解可以用在类上或方法上。
+>
+> - 作为类注解：表示类中所有的请求的父路径都是它
+> - 作为方法注解：映射路径
+>
+> RequsetMapping有以下属性
+
+##### value
+
+> 默认属性，如果只有 value 属性时，可以省略该属性名，如果有其它属性，则必须写上 value 属性名称。
+>
+> 支持通配符匹配。 @RequestMapping(value="toUser/*") 表示 http://localhost:8080/toUser/1 或 http://localhost:8080/toUser/hahaha 都能够正常访问.
+>
+> 注意，此值是唯一的。
+
+```java
+@RequestMapping(value="toUser")
+@RequestMapping("toUser")
+@RequestMapping(value="toUser/*")
+```
+
+##### path
+
+> 等同于value。
+
+##### method
+
+> 表示该方法支持的HTTP请求，默认支持所有。
+>
+> 对于指定请求方式的控制器方法，SpringMVC提供了派生注解
+>
+> 处理get请求的映射-->@GetMapping
+>
+> 处理post请求的映射-->@PostMapping
+>
+> 处理put请求的映射-->@PutMapping
+>
+> 处理delete请求的映射-->@DeleteMapping
+>
+> 但是目前的浏览器只支持get和post请求，若设置了其他请求方式（put和delete），则按照默认的get请求处理。
+
+```java
+@RequestMapping(value = "toUser",method = RequestMethod.GET) 
+//表示该方法只支持 GET 请求。
+
+//也可指定多个 HTTP 请求
+@RequestMapping(value = "toUser",method = {RequestMethod.GET,RequestMethod.POST})
+//说明该方法同时支持 GET 和 POST 请求。
+```
+
+##### params
+
+> 指定请求中规定的参数。
+
+举个:chestnut:
+
+```java
+@Controller
+@RequestMapping("user")
+public class UserController {
+
+    @RequestMapping(value = "login",params = "exists")
+    public String login(){
+        return "login";
+    }
+
+    @RequestMapping(value = "logout",params = "status=1")
+    public String logout(){
+        return "logout";
+    }
+}
+```
+
+那么在访问时，我们需要如下
+
+```html
+<div>
+    <a th:href="${'user/login?exists=1'}">登录</a><br>
+</div>
+<div>
+    <a th:href="${'user/logout?status=1'}">登出</a><br>
+</div>
+```
+
+##### headers
+
+
+
+##### name
+
+> 相当于方法注释
+
+
+
+### 获取请求参数
+
+> 在SpringMVC中有多种获取请求参数的方法
+>
+> - 通过ServletAPI中的HttpServletRequest接受请求参数
+> - 通过实体Bean接收请求参数
+> - 通过处理方法的形参接受请求参数
+> - 通过@PathVariable接收URL中的请求参数
+> - 通过@RequestParam接受请求参数
+> - 通过@ModelAttribute接收请求参数
+
+
+
+
+
+### 常见错误
+
+#### 405
+
+> 请求方式不支持
+
+
+
+
+
+
+
+
 
 
 
